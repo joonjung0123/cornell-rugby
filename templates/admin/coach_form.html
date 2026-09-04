@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ action }} Coach — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.4rem;">{{ action }} Coach — {{ team|title }}'s Team</h1>
+</div>
+<a href="{{ url_for('admin_coaches', team=team) }}" class="text-muted" style="font-size:0.875rem;">← Back to Coaches</a>
+
+<form class="admin-form mt-3"
+      method="post"
+      enctype="multipart/form-data"
+      action="{% if coach %}{{ url_for('admin_coach_edit', team=team, coach_id=coach.id) }}{% else %}{{ url_for('admin_coach_add', team=team) }}{% endif %}">
+
+  <div class="form-group">
+    <label for="name">Full Name *</label>
+    <input type="text" id="name" name="name" required
+           value="{{ coach.name if coach else '' }}" placeholder="e.g. Coach Tom Anderson" />
+  </div>
+
+  <div class="form-group">
+    <label for="role">Role / Title</label>
+    <input type="text" id="role" name="role"
+           value="{{ coach.role if coach else '' }}" placeholder="e.g. Head Coach" />
+  </div>
+
+  <div class="form-group">
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="4"
+              placeholder="Short paragraph about the coach...">{{ coach.bio if coach else '' }}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="photo">Photo (jpg, png, gif, webp)</label>
+    {% if coach and coach.photo %}
+      <p style="font-size:0.8rem; color:#57606a; margin-bottom:0.3rem;">
+        Current: {{ coach.photo }} — upload a new file to replace it.
+      </p>
+    {% endif %}
+    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.gif,.webp" />
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ action }} Coach</button>
+  <a href="{{ url_for('admin_coaches', team=team) }}" class="btn" style="background:#e5e7eb; margin-left:0.5rem;">Cancel</a>
+</form>
+{% endblock %}

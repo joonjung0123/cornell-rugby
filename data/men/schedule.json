@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2025-09-13",
+    "opponent": "Harvard",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": "W 34-12"
+  },
+  {
+    "date": "2025-09-20",
+    "opponent": "Yale",
+    "location": "Away",
+    "venue": "Yale Bowl, New Haven CT",
+    "result": "W 21-18"
+  },
+  {
+    "date": "2025-10-04",
+    "opponent": "Dartmouth",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2025-10-18",
+    "opponent": "Princeton",
+    "location": "Away",
+    "venue": "Class of 1952 Stadium, Princeton NJ",
+    "result": ""
+  },
+  {
+    "date": "2025-11-01",
+    "opponent": "Penn",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": ""
+  }
+]

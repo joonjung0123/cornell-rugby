@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Fan Zone — Cornell Rugby {{ team|title }}'s{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="team-label">Cornell Rugby — {{ team|title }}'s Team</p>
+  <h1>Fan Zone</h1>
+</div>
+
+<!-- ── Merchandise ───────────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2>Official Merchandise</h2>
+  <p class="text-muted mb-2">Show your Big Red pride — shop official Cornell Rugby gear.</p>
+
+  <!-- CUSTOMIZE: Replace # with real store URLs, and update button labels as needed -->
+  <!-- MERCH LINKS START -->
+  <div class="merch-links">
+    <a href="#" target="_blank" rel="noopener" class="btn btn-primary">Shop Jerseys</a>
+    <a href="#" target="_blank" rel="noopener" class="btn btn-primary">Hats &amp; Apparel</a>
+    <a href="#" target="_blank" rel="noopener" class="btn btn-primary">Accessories</a>
+  </div>
+  <!-- MERCH LINKS END -->
+</section>
+
+<!-- ── Social Media ──────────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2>Follow Us</h2>
+
+  <div class="social-embeds">
+
+    <!-- Instagram Embed -->
+    <div class="embed-box">
+      <h3>Instagram</h3>
+      <!-- CUSTOMIZE: Paste your Instagram embed code below (replace this placeholder) -->
+      <!-- PASTE INSTAGRAM EMBED HERE -->
+      <p class="text-muted" style="font-size:0.875rem;">
+        Follow us on Instagram:
+        <!-- CUSTOMIZE: Update the handle/link below -->
+        <a href="https://instagram.com/cornellrugby" target="_blank" rel="noopener">
+          @cornellrugby
+        </a>
+      </p>
+    </div>
+
+    <!-- X / Twitter Embed -->
+    <div class="embed-box">
+      <h3>X / Twitter</h3>
+      <!-- CUSTOMIZE: Paste your X/Twitter timeline embed code below -->
+      <!-- PASTE X/TWITTER EMBED HERE -->
+      <p class="text-muted" style="font-size:0.875rem;">
+        Follow us on X:
+        <!-- CUSTOMIZE: Update the handle/link below -->
+        <a href="https://x.com/cornellrugby" target="_blank" rel="noopener">
+          @cornellrugby
+        </a>
+      </p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

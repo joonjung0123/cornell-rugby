@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Recruit — Cornell Rugby {{ team|title }}'s{% endblock %}
+
+{% block content %}
+<!-- ── Recruit hero ──────────────────────────────────────────────────────── -->
+<section class="recruit-hero">
+  <div>
+    <h2>Join Cornell {{ team|title }}'s Rugby</h2>
+    <!-- CUSTOMIZE: Edit the tagline below -->
+    <p>
+      {% if team == "men" %}
+        We're always looking for dedicated athletes who want to compete at the collegiate level. No prior rugby experience required — just commitment and passion.
+      {% else %}
+        Women's rugby at Cornell is one of the most exciting programs on campus. Whether you're a seasoned player or brand new to the sport, we want to hear from you.
+      {% endif %}
+    </p>
+    <a href="mailto:cornellrugby@cornell.edu" class="btn btn-secondary">Email Us to Express Interest</a>
+  </div>
+</section>
+
+<!-- ── Program highlights ────────────────────────────────────────────────── -->
+<div class="recruit-body">
+  <h3>Why Cornell Rugby?</h3>
+  <!-- CUSTOMIZE: Edit the bullet points below to highlight your program -->
+  <ul class="recruit-highlights">
+    <li>Competitive Ivy League schedule with passionate, driven teammates</li>
+    <li>Experienced coaching staff committed to player development</li>
+    <li>Strong alumni network and post-graduate opportunities</li>
+    <li>Training facilities and dedicated practice fields on Cornell campus</li>
+    <li>Welcoming environment for players of all experience levels</li>
+    <!-- CUSTOMIZE: Add more bullet points here as needed -->
+  </ul>
+
+  <!-- ── Interest form ───────────────────────────────────────────────────── -->
+  <div class="recruit-form">
+    <h3>Express Interest</h3>
+    <p class="text-muted mb-2" style="font-size:0.875rem;">
+      Fill out the form below and we'll reach out to you directly.
+    </p>
+    <!-- This form sends an email via mailto — no server processing needed -->
+    <form
+      action="mailto:cornellrugby@cornell.edu"
+      method="get"
+      enctype="text/plain"
+    >
+      <div class="form-group">
+        <label for="recruit-name">Full Name *</label>
+        <input type="text" id="recruit-name" name="Name" required placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label for="recruit-email">Email Address *</label>
+        <input type="email" id="recruit-email" name="Email" required placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="recruit-grad">Expected Graduation Year</label>
+        <input type="text" id="recruit-grad" name="Graduation Year" placeholder="e.g. 2028" />
+      </div>
+      <div class="form-group">
+        <label for="recruit-exp">Rugby Experience</label>
+        <select id="recruit-exp" name="Experience">
+          <option value="">Select...</option>
+          <option>No prior rugby experience</option>
+          <option>Played recreationally / club sport</option>
+          <option>Played high school rugby</option>
+          <option>Played club / regional rugby</option>
+          <option>Played collegiate rugby</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="recruit-msg">Tell us about yourself</label>
+        <textarea id="recruit-msg" name="Message" placeholder="Any details about your athletic background, position, or questions..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Interest Form</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Home — Cornell Rugby{% endblock %}
+
+{% block content %}
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <!-- CUSTOMIZE: Replace logo.png in static/images/ with your team logo -->
+    <img
+      src="{{ url_for('static', filename='images/logo.png') }}"
+      alt="Cornell Rugby"
+      class="hero-logo"
+      onerror="this.style.display='none';"
+    />
+    <h1 class="hero-title">Cornell Rugby</h1>
+    <!-- CUSTOMIZE: Edit the tagline below -->
+    <p class="hero-tagline">One Team. One Dream. Big Red Rugby.</p>
+    <div class="hero-cta">
+      <a href="{{ url_for('players', team='men') }}"   class="btn btn-primary">Men's Team</a>
+      <a href="{{ url_for('players', team='women') }}" class="btn btn-secondary">Women's Team</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── About / Quick Links ───────────────────────────────────────────────── -->
+<section class="home-sections">
+  <div class="home-card">
+    <h2>Men's Rugby</h2>
+    <!-- CUSTOMIZE: Edit this description for the men's program -->
+    <p>Cornell Men's Rugby has a proud tradition of excellence at the collegiate level. Join us on the pitch.</p>
+    <ul class="home-links">
+      <li><a href="{{ url_for('players',  team='men') }}">→ Players</a></li>
+      <li><a href="{{ url_for('coaches',  team='men') }}">→ Coaches</a></li>
+      <li><a href="{{ url_for('schedule', team='men') }}">→ Schedule</a></li>
+      <li><a href="{{ url_for('recruit',  team='men') }}">→ Recruit</a></li>
+      <li><a href="{{ url_for('fan',      team='men') }}">→ Fan Zone</a></li>
+    </ul>
+  </div>
+
+  <div class="home-card">
+    <h2>Women's Rugby</h2>
+    <!-- CUSTOMIZE: Edit this description for the women's program -->
+    <p>Cornell Women's Rugby is a competitive, welcoming program open to all levels of experience. Come play with us.</p>
+    <ul class="home-links">
+      <li><a href="{{ url_for('players',  team='women') }}">→ Players</a></li>
+      <li><a href="{{ url_for('coaches',  team='women') }}">→ Coaches</a></li>
+      <li><a href="{{ url_for('schedule', team='women') }}">→ Schedule</a></li>
+      <li><a href="{{ url_for('recruit',  team='women') }}">→ Recruit</a></li>
+      <li><a href="{{ url_for('fan',      team='women') }}">→ Fan Zone</a></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

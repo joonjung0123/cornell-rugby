@@ -1,0 +1,16 @@
+[
+  {
+    "id": "coach-anderson",
+    "name": "Coach Tom Anderson",
+    "role": "Head Coach",
+    "bio": "Tom Anderson brings 15 years of collegiate coaching experience to the Cornell Men's program. A former player himself, he emphasises discipline, fitness, and team culture.",
+    "photo": "images/men/coach-anderson.jpg"
+  },
+  {
+    "id": "coach-patel",
+    "name": "Coach Raj Patel",
+    "role": "Forwards Coach",
+    "bio": "Raj played professionally in the UK before transitioning to coaching. He specialises in set-piece and breakdown work.",
+    "photo": "images/men/coach-patel.jpg"
+  }
+]

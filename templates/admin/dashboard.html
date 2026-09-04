@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin Dashboard — Cornell Rugby{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.5rem;">Admin Dashboard</h1>
+</div>
+
+<p class="text-muted mb-2">Select a section to manage:</p>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+  <!-- Men's Team -->
+  <div style="background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:1.5rem;">
+    <h2 style="color:#B31B1B; font-size:1.1rem; margin-bottom:1rem; border-bottom:2px solid #B31B1B; padding-bottom:0.4rem;">
+      Men's Team
+    </h2>
+    <nav class="admin-nav" style="flex-direction:column; gap:0.5rem;">
+      <a href="{{ url_for('admin_players',  team='men') }}">👤 Players</a>
+      <a href="{{ url_for('admin_coaches',  team='men') }}">🏉 Coaches</a>
+      <a href="{{ url_for('admin_schedule', team='men') }}">📅 Schedule</a>
+    </nav>
+  </div>
+
+  <!-- Women's Team -->
+  <div style="background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:1.5rem;">
+    <h2 style="color:#B31B1B; font-size:1.1rem; margin-bottom:1rem; border-bottom:2px solid #B31B1B; padding-bottom:0.4rem;">
+      Women's Team
+    </h2>
+    <nav class="admin-nav" style="flex-direction:column; gap:0.5rem;">
+      <a href="{{ url_for('admin_players',  team='women') }}">👤 Players</a>
+      <a href="{{ url_for('admin_coaches',  team='women') }}">🏉 Coaches</a>
+      <a href="{{ url_for('admin_schedule', team='women') }}">📅 Schedule</a>
+    </nav>
+  </div>
+
+</div>
+{% endblock %}

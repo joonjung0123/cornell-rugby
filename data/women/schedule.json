@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2025-09-14",
+    "opponent": "Harvard Women",
+    "location": "Away",
+    "venue": "Soldiers Field, Boston MA",
+    "result": "W 29-10"
+  },
+  {
+    "date": "2025-09-21",
+    "opponent": "Columbia Women",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": "L 14-17"
+  },
+  {
+    "date": "2025-10-05",
+    "opponent": "Yale Women",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2025-10-19",
+    "opponent": "Brown Women",
+    "location": "Away",
+    "venue": "Meade Stadium, Providence RI",
+    "result": ""
+  },
+  {
+    "date": "2025-11-02",
+    "opponent": "Princeton Women",
+    "location": "Home",
+    "venue": "Schoellkopf Field, Ithaca NY",
+    "result": ""
+  }
+]

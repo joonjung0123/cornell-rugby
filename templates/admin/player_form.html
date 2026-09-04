@@ -1,0 +1,64 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ action }} Player — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.4rem;">{{ action }} Player — {{ team|title }}'s Team</h1>
+</div>
+<a href="{{ url_for('admin_players', team=team) }}" class="text-muted" style="font-size:0.875rem;">← Back to Players</a>
+
+<form class="admin-form mt-3"
+      method="post"
+      enctype="multipart/form-data"
+      action="{% if player %}{{ url_for('admin_player_edit', team=team, player_id=player.id) }}{% else %}{{ url_for('admin_player_add', team=team) }}{% endif %}">
+
+  <div class="form-group">
+    <label for="name">Full Name *</label>
+    <input type="text" id="name" name="name" required
+           value="{{ player.name if player else '' }}" placeholder="e.g. John Smith" />
+  </div>
+
+  <div class="form-group">
+    <label for="number">Jersey Number</label>
+    <input type="text" id="number" name="number"
+           value="{{ player.number if player else '' }}" placeholder="e.g. 7" />
+  </div>
+
+  <div class="form-group">
+    <label for="position">Position</label>
+    <input type="text" id="position" name="position"
+           value="{{ player.position if player else '' }}" placeholder="e.g. Flanker" />
+  </div>
+
+  <div class="form-group">
+    <label for="year">Year / Class</label>
+    <input type="text" id="year" name="year"
+           value="{{ player.year if player else '' }}" placeholder="e.g. Junior" />
+  </div>
+
+  <div class="form-group">
+    <label for="hometown">Hometown</label>
+    <input type="text" id="hometown" name="hometown"
+           value="{{ player.hometown if player else '' }}" placeholder="e.g. Buffalo, NY" />
+  </div>
+
+  <div class="form-group">
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="4"
+              placeholder="Short paragraph about the player...">{{ player.bio if player else '' }}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="photo">Photo (jpg, png, gif, webp)</label>
+    {% if player and player.photo %}
+      <p style="font-size:0.8rem; color:#57606a; margin-bottom:0.3rem;">
+        Current: {{ player.photo }} — upload a new file to replace it.
+      </p>
+    {% endif %}
+    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.gif,.webp" />
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ action }} Player</button>
+  <a href="{{ url_for('admin_players', team=team) }}" class="btn" style="background:#e5e7eb; margin-left:0.5rem;">Cancel</a>
+</form>
+{% endblock %}

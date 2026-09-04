@@ -1,0 +1,47 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ team|title }}'s Coaches — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.4rem;">{{ team|title }}'s Coaches</h1>
+  <a href="{{ url_for('admin_coach_add', team=team) }}" class="btn btn-primary btn-sm">+ Add Coach</a>
+</div>
+<a href="{{ url_for('admin_dashboard') }}" class="text-muted" style="font-size:0.875rem;">← Dashboard</a>
+
+{% if coaches %}
+<table class="admin-table mt-2">
+  <thead>
+    <tr>
+      <th>Photo</th><th>Name</th><th>Role</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for coach in coaches %}
+    <tr>
+      <td>
+        {% if coach.photo %}
+          <img src="{{ url_for('static', filename=coach.photo) }}"
+               style="width:40px; height:50px; object-fit:cover; border-radius:3px;"
+               onerror="this.style.display='none';" />
+        {% else %}—{% endif %}
+      </td>
+      <td><strong>{{ coach.name }}</strong></td>
+      <td>{{ coach.role }}</td>
+      <td style="white-space:nowrap;">
+        <a href="{{ url_for('admin_coach_edit', team=team, coach_id=coach.id) }}"
+           class="btn btn-sm" style="background:#e5e7eb;">Edit</a>
+        <form method="post"
+              action="{{ url_for('admin_coach_delete', team=team, coach_id=coach.id) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Delete {{ coach.name }}?')">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <div class="empty-state">No coaches yet. <a href="{{ url_for('admin_coach_add', team=team) }}">Add one →</a></div>
+{% endif %}
+{% endblock %}

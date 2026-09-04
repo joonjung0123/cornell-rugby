@@ -1,0 +1,43 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ team|title }}'s Schedule — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.4rem;">{{ team|title }}'s Schedule</h1>
+  <a href="{{ url_for('admin_schedule_add', team=team) }}" class="btn btn-primary btn-sm">+ Add Game</a>
+</div>
+<a href="{{ url_for('admin_dashboard') }}" class="text-muted" style="font-size:0.875rem;">← Dashboard</a>
+
+{% if schedule %}
+<table class="admin-table mt-2">
+  <thead>
+    <tr>
+      <th>Date</th><th>Opponent</th><th>Location</th><th>Venue</th><th>Result</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for idx, game in schedule|enumerate %}
+    <tr>
+      <td>{{ game.date }}</td>
+      <td><strong>{{ game.opponent }}</strong></td>
+      <td>{{ game.location }}</td>
+      <td>{{ game.venue }}</td>
+      <td>{{ game.result or '—' }}</td>
+      <td style="white-space:nowrap;">
+        <a href="{{ url_for('admin_schedule_edit', team=team, idx=idx) }}"
+           class="btn btn-sm" style="background:#e5e7eb;">Edit</a>
+        <form method="post"
+              action="{{ url_for('admin_schedule_delete', team=team, idx=idx) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Delete this game?')">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <div class="empty-state">No games yet. <a href="{{ url_for('admin_schedule_add', team=team) }}">Add one →</a></div>
+{% endif %}
+{% endblock %}

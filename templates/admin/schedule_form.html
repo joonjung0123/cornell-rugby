@@ -1,0 +1,49 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ action }} Game — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.4rem;">{{ action }} Game — {{ team|title }}'s Schedule</h1>
+</div>
+<a href="{{ url_for('admin_schedule', team=team) }}" class="text-muted" style="font-size:0.875rem;">← Back to Schedule</a>
+
+<form class="admin-form mt-3"
+      method="post"
+      action="{% if game %}{{ url_for('admin_schedule_edit', team=team, idx=idx) }}{% else %}{{ url_for('admin_schedule_add', team=team) }}{% endif %}">
+
+  <div class="form-group">
+    <label for="date">Date *</label>
+    <input type="date" id="date" name="date" required
+           value="{{ game.date if game else '' }}" />
+  </div>
+
+  <div class="form-group">
+    <label for="opponent">Opponent *</label>
+    <input type="text" id="opponent" name="opponent" required
+           value="{{ game.opponent if game else '' }}" placeholder="e.g. Harvard" />
+  </div>
+
+  <div class="form-group">
+    <label for="location">Home / Away</label>
+    <select id="location" name="location">
+      <option value="Home" {% if game and game.location == 'Home' %}selected{% endif %}>Home</option>
+      <option value="Away" {% if game and game.location == 'Away' %}selected{% endif %}>Away</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="venue">Venue</label>
+    <input type="text" id="venue" name="venue"
+           value="{{ game.venue if game else '' }}" placeholder="e.g. Schoellkopf Field, Ithaca NY" />
+  </div>
+
+  <div class="form-group">
+    <label for="result">Result <span class="text-muted" style="font-weight:400;">(leave blank for upcoming games)</span></label>
+    <input type="text" id="result" name="result"
+           value="{{ game.result if game else '' }}" placeholder="e.g. W 34-12 or L 10-21" />
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ action }} Game</button>
+  <a href="{{ url_for('admin_schedule', team=team) }}" class="btn" style="background:#e5e7eb; margin-left:0.5rem;">Cancel</a>
+</form>
+{% endblock %}

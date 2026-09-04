@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ team|title }}'s Schedule — Cornell Rugby{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="team-label">Cornell Rugby — {{ team|title }}'s Team</p>
+  <h1>Schedule &amp; Results</h1>
+</div>
+
+<div class="content-wrap">
+  {% if schedule %}
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Opponent</th>
+          <th>Location</th>
+          <th>Venue</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for game in schedule %}
+        <tr class="{% if not game.result %}upcoming{% endif %}">
+          <td>{{ game.date }}</td>
+          <td><strong>{{ game.opponent }}</strong></td>
+          <td>
+            <span class="badge {% if game.location == 'Home' %}badge-home{% else %}badge-away{% endif %}">
+              {{ game.location }}
+            </span>
+          </td>
+          <td>{{ game.venue }}</td>
+          <td>
+            {% if game.result %}
+              {% if game.result.startswith('W') %}
+                <span class="result-win">{{ game.result }}</span>
+              {% elif game.result.startswith('L') %}
+                <span class="result-loss">{{ game.result }}</span>
+              {% else %}
+                {{ game.result }}
+              {% endif %}
+            {% else %}
+              <span class="text-muted">Upcoming</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">
+      <p>No schedule posted yet. Check back soon!</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "john-smith",
+    "name": "John Smith",
+    "number": "7",
+    "position": "Flanker",
+    "year": "Junior",
+    "hometown": "Buffalo, NY",
+    "bio": "John is a physical presence at flanker, known for his work rate at the breakdown. He joined the team as a walk-on sophomore and has started every match since.",
+    "photo": "images/men/john-smith.jpg"
+  },
+  {
+    "id": "michael-brown",
+    "name": "Michael Brown",
+    "number": "10",
+    "position": "Fly-half",
+    "year": "Senior",
+    "hometown": "Albany, NY",
+    "bio": "Michael orchestrates the backline with composure beyond his years. A two-year captain and three-time All-Ivy selection.",
+    "photo": "images/men/michael-brown.jpg"
+  },
+  {
+    "id": "david-lee",
+    "name": "David Lee",
+    "number": "2",
+    "position": "Hooker",
+    "year": "Sophomore",
+    "hometown": "Rochester, NY",
+    "bio": "David brings energy and physicality to the front row. He also serves as a reserve lineout caller.",
+    "photo": "images/men/david-lee.jpg"
+  }
+]

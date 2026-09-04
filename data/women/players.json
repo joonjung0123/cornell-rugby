@@ -1,0 +1,32 @@
+[
+  {
+    "id": "sarah-jones",
+    "name": "Sarah Jones",
+    "number": "12",
+    "position": "Inside Centre",
+    "year": "Senior",
+    "hometown": "Ithaca, NY",
+    "bio": "Sarah is a powerful ball-carrier who leads the team in metres made. She has been a cornerstone of the women's program for three seasons.",
+    "photo": "images/women/sarah-jones.jpg"
+  },
+  {
+    "id": "emily-chen",
+    "name": "Emily Chen",
+    "number": "9",
+    "position": "Scrum-half",
+    "year": "Junior",
+    "hometown": "New York, NY",
+    "bio": "Emily's quick service and sharp decision-making set the tempo for the entire team. She was named Rookie of the Year in her first season.",
+    "photo": "images/women/emily-chen.jpg"
+  },
+  {
+    "id": "lisa-martinez",
+    "name": "Lisa Martinez",
+    "number": "4",
+    "position": "Lock",
+    "year": "Sophomore",
+    "hometown": "Syracuse, NY",
+    "bio": "Lisa is an imposing lineout target and a fierce presence in the loose. She brings both size and athleticism to the second row.",
+    "photo": "images/women/lisa-martinez.jpg"
+  }
+]

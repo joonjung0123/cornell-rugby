@@ -1,0 +1,16 @@
+[
+  {
+    "id": "coach-williams",
+    "name": "Coach Dana Williams",
+    "role": "Head Coach",
+    "bio": "Dana Williams is a former USA Eagles player and brings elite-level experience to the Cornell Women's program. She joined Cornell in 2021 and has led the team to back-to-back Ivy titles.",
+    "photo": "images/women/coach-williams.jpg"
+  },
+  {
+    "id": "coach-nguyen",
+    "name": "Coach Linh Nguyen",
+    "role": "Skills & Backs Coach",
+    "bio": "Linh is a former collegiate All-American who focuses on backline structure, kicking game, and individual skills development.",
+    "photo": "images/women/coach-nguyen.jpg"
+  }
+]

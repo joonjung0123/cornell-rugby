@@ -1,0 +1,25 @@
+[Unit]
+Description=Cornell Rugby Flask App
+After=network.target
+
+[Service]
+# CUSTOMIZE: Replace 'cornellrugby' with the actual non-root system user running the app
+User=cornellrugby
+Group=cornellrugby
+
+# CUSTOMIZE: Set this to the absolute path where you cloned the repo
+WorkingDirectory=/home/cornellrugby/cornell-rugby
+
+# CUSTOMIZE: Set SECRET_KEY to a long random string (e.g. run: python3 -c "import secrets; print(secrets.token_hex(32))")
+Environment="SECRET_KEY=replace-with-a-long-random-secret"
+
+ExecStart=/home/cornellrugby/cornell-rugby/venv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:8000 \
+    app:app
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
