@@ -1,51 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ team|title }}'s Players — Cornell Rugby{% endblock %}
+{% block title %}Under Construction — Cornell Rugby{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <p class="team-label">Cornell Rugby — {{ team|title }}'s Team</p>
-  <h1>Players</h1>
-</div>
-
-<div class="content-wrap">
-  {% if players %}
-    <div class="card-grid">
-      {% for player in players %}
-      <div class="card">
-        {% if player.photo %}
-          <img
-            class="card-photo"
-            src="{{ url_for('static', filename=player.photo) }}"
-            alt="{{ player.name }}"
-            loading="lazy"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-          />
-        {% endif %}
-        <div class="card-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>
-          &#128100;
-        </div>
-        <div class="card-body">
-          <div class="card-number">#{{ player.number }} &middot; {{ player.position }}</div>
-          <div class="card-name">{{ player.name }}</div>
-          <div class="card-pos">{{ player.year }}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</div>
-        </div>
-        {% if player.bio %}
-        <div class="bio-panel">
-          <p class="bio-meta">
-            {% if player.year %}{{ player.year }}{% endif %}
-            {% if player.hometown %} &middot; {{ player.hometown }}{% endif %}
-          </p>
-          <p>{{ player.bio }}</p>
-        </div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-    <p class="text-muted mt-3" style="font-size:0.8rem;">Click a player card to see their bio.</p>
-  {% else %}
-    <div class="empty-state">
-      <p>No players listed yet. Check back soon!</p>
-    </div>
-  {% endif %}
+  <h1>Under Construction</h1>
 </div>
 {% endblock %}

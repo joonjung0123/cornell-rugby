@@ -34,44 +34,15 @@
   <!-- ── Interest form ───────────────────────────────────────────────────── -->
   <div class="recruit-form">
     <h3>Express Interest</h3>
-    <p class="text-muted mb-2" style="font-size:0.875rem;">
-      Fill out the form below and we'll reach out to you directly.
-    </p>
-    <!-- This form sends an email via mailto — no server processing needed -->
-    <form
-      action="mailto:cornellrugby@cornell.edu"
-      method="get"
-      enctype="text/plain"
-    >
-      <div class="form-group">
-        <label for="recruit-name">Full Name *</label>
-        <input type="text" id="recruit-name" name="Name" required placeholder="Your full name" />
-      </div>
-      <div class="form-group">
-        <label for="recruit-email">Email Address *</label>
-        <input type="email" id="recruit-email" name="Email" required placeholder="your@email.com" />
-      </div>
-      <div class="form-group">
-        <label for="recruit-grad">Expected Graduation Year</label>
-        <input type="text" id="recruit-grad" name="Graduation Year" placeholder="e.g. 2028" />
-      </div>
-      <div class="form-group">
-        <label for="recruit-exp">Rugby Experience</label>
-        <select id="recruit-exp" name="Experience">
-          <option value="">Select...</option>
-          <option>No prior rugby experience</option>
-          <option>Played recreationally / club sport</option>
-          <option>Played high school rugby</option>
-          <option>Played club / regional rugby</option>
-          <option>Played collegiate rugby</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="recruit-msg">Tell us about yourself</label>
-        <textarea id="recruit-msg" name="Message" placeholder="Any details about your athletic background, position, or questions..."></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Send Interest Form</button>
-    </form>
+    <iframe
+      src="https://docs.google.com/forms/d/e/1FAIpQLSewyCgz_R2Fvdw66yf3-mziAXMPK4CiKpLNe9SldwgTV8bRew/viewform?embedded=true"
+      width="100%"
+      height="1200"
+      frameborder="0"
+      marginheight="0"
+      marginwidth="0"
+      title="Cornell Rugby recruit interest form"
+    >Loading…</iframe>
   </div>
 </div>
 {% endblock %}

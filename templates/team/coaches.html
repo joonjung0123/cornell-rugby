@@ -1,46 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ team|title }}'s Coaches — Cornell Rugby{% endblock %}
+{% block title %}Under Construction — Cornell Rugby{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <p class="team-label">Cornell Rugby — {{ team|title }}'s Team</p>
-  <h1>Coaching Staff</h1>
-</div>
-
-<div class="content-wrap">
-  {% if coaches %}
-    <div class="card-grid">
-      {% for coach in coaches %}
-      <div class="card">
-        {% if coach.photo %}
-          <img
-            class="card-photo"
-            src="{{ url_for('static', filename=coach.photo) }}"
-            alt="{{ coach.name }}"
-            loading="lazy"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-          />
-        {% endif %}
-        <div class="card-photo-placeholder" {% if coach.photo %}style="display:none;"{% endif %}>
-          &#128101;
-        </div>
-        <div class="card-body">
-          <div class="card-number">{{ coach.role }}</div>
-          <div class="card-name">{{ coach.name }}</div>
-        </div>
-        {% if coach.bio %}
-        <div class="bio-panel">
-          <p>{{ coach.bio }}</p>
-        </div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-    <p class="text-muted mt-3" style="font-size:0.8rem;">Click a card to read the full bio.</p>
-  {% else %}
-    <div class="empty-state">
-      <p>No coaching staff listed yet.</p>
-    </div>
-  {% endif %}
+  <h1>Under Construction</h1>
 </div>
 {% endblock %}
