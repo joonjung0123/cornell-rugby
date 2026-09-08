@@ -1,13 +1,13 @@
 [
   {
-    "id": "john-smith",
-    "name": "John Smith",
-    "number": "7",
-    "position": "Flanker",
-    "year": "Junior",
-    "hometown": "Buffalo, NY",
-    "bio": "John is a physical presence at flanker, known for his work rate at the breakdown. He joined the team as a walk-on sophomore and has started every match since.",
-    "photo": "images/men/john-smith.jpg"
+    "id": "tatenda-gonese",
+    "name": "Tatenda Gonese",
+    "number": "3",
+    "position": "Prop",
+    "year": "Senior",
+    "hometown": "Zimbabwe",
+    "bio": "Zimbabwe U-18",
+    "photo": "images/men/tatenda.png"
   },
   {
     "id": "michael-brown",
