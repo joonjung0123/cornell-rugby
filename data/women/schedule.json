@@ -1,37 +1,37 @@
 [
   {
-    "date": "2025-09-14",
-    "opponent": "Harvard Women",
+    "date": "2026-09-20",
+    "opponent": "Niagara University",
     "location": "Away",
-    "venue": "Soldiers Field, Boston MA",
-    "result": "W 29-10"
-  },
-  {
-    "date": "2025-09-21",
-    "opponent": "Columbia Women",
-    "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
-    "result": "L 14-17"
-  },
-  {
-    "date": "2025-10-05",
-    "opponent": "Yale Women",
-    "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
+    "venue": "Niagara University, Niagara Falls NY",
     "result": ""
   },
   {
-    "date": "2025-10-19",
-    "opponent": "Brown Women",
-    "location": "Away",
-    "venue": "Meade Stadium, Providence RI",
+    "date": "2025-09-26",
+    "opponent": "Binghamton",
+    "location": "Home",
+    "venue": "Cornell University, Ithaca NY",
     "result": ""
   },
   {
-    "date": "2025-11-02",
-    "opponent": "Princeton Women",
+    "date": "2025-10-04",
+    "opponent": "Syracuse",
     "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
+    "venue": "Cornell University, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2025-10-17",
+    "opponent": "Colgate",
+    "location": "Home",
+    "venue": "Cornell University, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2025-10-24",
+    "opponent": "Buffalo State",
+    "location": "Away",
+    "venue": "Buffalo, NY",
     "result": ""
   }
 ]

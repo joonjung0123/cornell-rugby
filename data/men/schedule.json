@@ -1,37 +1,65 @@
 [
   {
-    "date": "2025-09-13",
-    "opponent": "Harvard",
-    "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
-    "result": "W 34-12"
-  },
-  {
-    "date": "2025-09-20",
-    "opponent": "Yale",
+    "date": "2026-09-12",
+    "opponent": "Nazareth",
     "location": "Away",
-    "venue": "Yale Bowl, New Haven CT",
-    "result": "W 21-18"
-  },
-  {
-    "date": "2025-10-04",
-    "opponent": "Dartmouth",
-    "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
+    "venue": "Nazareth University, Rochester NY",
     "result": ""
   },
   {
-    "date": "2025-10-18",
-    "opponent": "Princeton",
-    "location": "Away",
-    "venue": "Class of 1952 Stadium, Princeton NJ",
+    "date": "2026-09-19",
+    "opponent": "Stony Brook",
+    "location": "Home",
+    "venue": "Cornell University, Ithaca NY",
     "result": ""
   },
   {
-    "date": "2025-11-01",
-    "opponent": "Penn",
+    "date": "2026-09-26",
+    "opponent": "Bye",
+    "location": "",
+    "venue": "",
+    "result": ""
+  },
+  {
+    "date": "2026-10-03",
+    "opponent": "Binghampton",
     "location": "Home",
-    "venue": "Schoellkopf Field, Ithaca NY",
+    "venue": "Cornell University, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2026-10-10/11",
+    "opponent": "Marist",
+    "location": "Away",
+    "venue": "Marist College, Poughkeepsie NY",
+    "result": ""
+  },
+  {
+    "date": "2026-10-17",
+    "opponent": "RPI",
+    "location": "Home",
+    "venue": "Cornell University, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2026-10-24",
+    "opponent": "RIT",
+    "location": "Away",
+    "venue": "Rochester Institute of Technology, Rochester NY",
+    "result": ""
+  },
+  {
+    "date": "2026-10-31",
+    "opponent": "UAlbany",
+    "location": "Home",
+    "venue": "Cornell University, Ithaca NY",
+    "result": ""
+  },
+  {
+    "date": "2026-11-17",
+    "opponent": "Oswego",
+    "location": "Away",
+    "venue": "SUNY Oswego, Oswego NY",
     "result": ""
   }
 ]
