@@ -1,6 +1,6 @@
 # Cornell Rugby Website — Developer Maintenance Guide
 
-This guide identifies the current source of truth for routine website updates. It is intended for developers maintaining the application after launch.
+This guide identifies the current source of truth for routine website updates. It is intended for developers maintaining the application after launch!
 
 ## Before Making a Change
 
