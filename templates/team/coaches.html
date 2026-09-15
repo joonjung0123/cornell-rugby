@@ -1,75 +1,14 @@
 {% extends "base.html" %}
-{% block title %}{{ team|title }}'s Coaching Staff — Cornell Rugby{% endblock %}
+{% block title %}Coaches — Cornell Rugby{% endblock %}
 
 {% block content %}
-
-<!-- ── Toolbar ────────────────────────────────────────────────────────────── -->
-<div class="page-toolbar">
-  <button class="toolbar-btn" onclick="window.print()">&#128438; Print</button>
-</div>
-
-<!-- ── Page title ─────────────────────────────────────────────────────────── -->
 <div class="page-header">
-  <h1>{{ now.year if now else "2025" }}-{{ (now.year + 1) if now else "2026" }} {{ team|title }}'s Rugby Coaching Staff</h1>
+  <h1>Coaching Staff</h1>
 </div>
-
-<!-- ── Coaches table ──────────────────────────────────────────────────────── -->
 <div class="content-wrap">
-  {% if coaches %}
-    <table class="coaches-table">
-      <thead>
-        <tr>
-          <th style="width:80px;">Image</th>
-          <th>Name</th>
-          <th>Title</th>
-          <th>Email Address</th>
-          <th>Phone</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for coach in coaches %}
-        <tr class="coach-row">
-          <td>
-            {% if coach.photo %}
-              <img
-                class="coach-thumb"
-                src="{{ url_for('static', filename=coach.photo) }}"
-                alt="{{ coach.name }}"
-                loading="lazy"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-              />
-            {% endif %}
-            <div class="coach-thumb-placeholder" {% if coach.photo %}style="display:none;"{% endif %}>
-              &#128100;
-            </div>
-          </td>
-          <td>
-            <span class="coach-name-link">{{ coach.name }}</span>
-            {% if coach.bio %}
-              <div class="coach-bio-expand" id="coach-bio-{{ loop.index }}">{{ coach.bio }}</div>
-            {% endif %}
-          </td>
-          <td>{{ coach.role }}</td>
-          <td>
-            {% if coach.email is defined and coach.email %}
-              <a href="mailto:{{ coach.email }}">{{ coach.email }}</a>
-            {% endif %}
-          </td>
-          <td>
-            {% if coach.phone is defined and coach.phone %}
-              {{ coach.phone }}
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if coaches | selectattr('bio') | list %}
-      <p class="text-muted mt-2" style="font-size:0.78rem;">Click a name to expand a coach's bio.</p>
-    {% endif %}
-  {% else %}
-    <div class="empty-state">No coaching staff listed yet. Check back soon!</div>
-  {% endif %}
+  <div class="empty-state" style="padding:4rem 1rem;">
+    <p style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">🚧 Under Construction</p>
+    <p>Coaching staff information is coming soon. Check back later!</p>
+  </div>
 </div>
-
 {% endblock %}

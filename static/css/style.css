@@ -362,12 +362,12 @@ ul { list-style: none; }
   letter-spacing: 0.04em;
   color: #fff;
 }
-.roster-table tbody tr {
+.roster-table-row {
   background: #fff;
   border-bottom: 1px solid var(--border);
 }
-.roster-table tbody tr:nth-child(even) { background: #f5f5f5; }
-.roster-table tbody tr:hover { background: #fdf5f5; }
+.roster-table-row:nth-child(even) { background: #f5f5f5; }
+.roster-table-row:hover { background: #fdf5f5; }
 
 /* Hide the bio-row from the alternating count */
 .rt-bio-row { display: none; background: #fafafa !important; }
