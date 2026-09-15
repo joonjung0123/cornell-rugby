@@ -32,17 +32,16 @@ document.addEventListener('click', () => {
   });
 });
 
-// ── Roster row bio expand ────────────────────────────────────────────────────
-document.querySelectorAll('.roster-row').forEach(row => {
+// ── Roster table row bio expand ──────────────────────────────────────────────
+document.querySelectorAll('.roster-table-row').forEach(row => {
   row.addEventListener('click', () => {
     const id = row.dataset.playerId;
     if (!id) return;
     const bio = document.getElementById('bio-' + id);
     if (!bio) return;
     const isOpen = bio.classList.toggle('open');
-    // update "Full Bio" arrow text
-    const link = row.querySelector('.roster-bio-link');
-    if (link) link.textContent = isOpen ? '▼ Full Bio' : '▶ Full Bio';
+    const toggle = row.querySelector('.rt-bio-toggle');
+    if (toggle) toggle.textContent = isOpen ? '▼ Full Bio' : '▶ Full Bio';
   });
 });
 

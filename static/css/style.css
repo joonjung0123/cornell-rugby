@@ -251,8 +251,8 @@ ul { list-style: none; }
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center 30%;
-  opacity: 0.45;
+  background-position: center center;
+  opacity: 0.75;
 }
 .hero-inner {
   position: relative;
@@ -340,154 +340,91 @@ ul { list-style: none; }
 }
 
 /* ── Roster rows (Cornell Athletics list style) ──────────────────────────── */
-.roster-list { margin-top: 0; border-top: 1px solid var(--border); }
-
-.roster-row {
-  display: flex;
-  align-items: stretch;
-  border-bottom: 1px solid var(--border);
+/* ── Roster table (Cornell Athletics style) ──────────────────────────────── */
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.roster-table thead tr {
+  background: var(--red);
+  color: #fff;
+}
+.roster-table th {
+  padding: 0.55rem 0.9rem;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.roster-table tbody tr {
   background: #fff;
-  cursor: pointer;
-  position: relative;
-  min-height: 90px;
+  border-bottom: 1px solid var(--border);
 }
-.roster-row:nth-child(even) { background: #f5f5f5; }
-.roster-row:hover { background: #fdf5f5; }
+.roster-table tbody tr:nth-child(even) { background: #f5f5f5; }
+.roster-table tbody tr:hover { background: #fdf5f5; }
 
-.roster-photo-cell {
-  flex-shrink: 0;
-  width: 88px;
-  padding: 8px 10px;
-  display: flex;
-  align-items: center;
+/* Hide the bio-row from the alternating count */
+.rt-bio-row { display: none; background: #fafafa !important; }
+.rt-bio-row.open { display: table-row; }
+.rt-bio-row td {
+  padding: 0.85rem 1rem 0.85rem 100px;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
 }
-.roster-photo {
-  width: 68px;
-  height: 68px;
+.rt-bio-meta { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.35rem; }
+
+.roster-table td {
+  padding: 0.65rem 0.9rem;
+  vertical-align: middle;
+}
+.rt-photo-cell { padding: 0.4rem 0.6rem; }
+.rt-photo {
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   object-position: top center;
-  background: #ccc;
   display: block;
 }
-.roster-photo-placeholder {
-  width: 68px;
-  height: 68px;
+.rt-photo-placeholder {
+  width: 64px;
+  height: 64px;
   background: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #aaa;
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
-
-/* The main content area to the right of the photo */
-.roster-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  gap: 0;
-}
-
-/* Left side: position label + number+name */
-.roster-left {
-  flex: 1;
-  min-width: 0;
-}
-.roster-position {
+.rt-number {
   font-family: var(--font-sans);
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin-bottom: 4px;
-  font-weight: 400;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--text);
 }
-.roster-number-name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0;
-}
-.roster-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: var(--red);
-  color: #fff;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 800;
-  flex-shrink: 0;
-  letter-spacing: 0;
-}
-.roster-name {
+.rt-name {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text);
-  line-height: 1.2;
 }
-
-/* Right side: year / hometown / bio link */
-.roster-right {
-  flex-shrink: 0;
-  text-align: left;
-  padding-left: 2rem;
-  min-width: 220px;
-}
-.roster-year {
+.rt-bio-toggle {
+  display: block;
   font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 700;
-  font-style: italic;
-  color: var(--text);
-  margin-bottom: 2px;
-}
-.roster-hometown {
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.roster-bio-link {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 400;
   color: var(--red);
-  display: flex;
-  align-items: center;
-  gap: 3px;
+  margin-top: 2px;
+  font-style: normal;
 }
-.roster-bio-link::before { content: "▶"; font-size: 0.6rem; }
-
-/* Expand (+) icon on far right */
-.roster-expand-icon {
-  flex-shrink: 0;
-  width: 32px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 6px 8px;
-  align-self: flex-end;
-  font-size: 1.2rem;
-  color: #bbb;
-  font-weight: 300;
-  line-height: 1;
-}
-
-/* Bio expand row */
-.bio-expand-row {
-  display: none;
-  background: #fafafa;
-  border-bottom: 1px solid var(--border);
-  padding: 1rem 1.5rem 1rem 100px;
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.7;
-  color: var(--text);
-}
-.bio-expand-row.open { display: block; }
-.bio-expand-meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 0.5rem; }
 
 /* ── Coaches table ───────────────────────────────────────────────────────── */
 .coaches-table {

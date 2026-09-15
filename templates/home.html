@@ -3,19 +3,12 @@
 
 {% block content %}
 
-<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<!-- ── Hero — Cornell Bear photo fills this section ──────────────────────── -->
+<!-- Place your photo at: static/images/hero.jpg -->
 <section class="hero">
-  <!-- CUSTOMIZE: add a team photo as background -->
-  <!-- <div class="hero-bg" style="background-image:url('{{ url_for('static', filename='images/team-banner.jpg') }}');"></div> -->
+  <div class="hero-bg" style="background-image:url('{{ url_for('static', filename='images/hero.jpg') }}');"></div>
   <div class="hero-inner">
-    <img
-      src="{{ url_for('static', filename='images/logo.png') }}"
-      alt="Cornell Rugby"
-      class="hero-logo"
-      onerror="this.style.display='none';"
-    />
     <h1 class="hero-title">Cornell Rugby</h1>
-    <p class="hero-tagline">One Team. One Dream. Big Red Rugby.</p>
     <div class="hero-cta">
       <a href="{{ url_for('players', team='men') }}"   class="btn btn-primary">Men's Roster</a>
       <a href="{{ url_for('players', team='women') }}" class="btn btn-secondary">Women's Roster</a>

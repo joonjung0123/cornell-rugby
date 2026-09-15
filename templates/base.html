@@ -19,7 +19,7 @@
           class="site-logo"
           onerror="this.style.display='none';"
         />
-        <span class="site-name">Rugby</span>
+        <span class="site-name">Cornell Rugby</span>
       </a>
 
       <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -32,35 +32,58 @@
           <li><a href="{{ url_for('home') }}"
                  class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
 
-          <!-- Men's dropdown -->
+          <!-- Roster dropdown -->
           <li class="dropdown">
             <button class="nav-link dropdown-toggle
-              {% if request.view_args and request.view_args.get('team') == 'men' %}active{% endif %}"
-              aria-haspopup="true" aria-expanded="false">
-              Men's ▾
-            </button>
+              {% if request.endpoint == 'players' %}active{% endif %}"
+              aria-haspopup="true" aria-expanded="false">Roster ▾</button>
             <ul class="dropdown-menu">
-              <li><a href="{{ url_for('players',  team='men') }}">Roster</a></li>
-              <li><a href="{{ url_for('coaches',  team='men') }}">Coaches</a></li>
-              <li><a href="{{ url_for('schedule', team='men') }}">Schedule</a></li>
-              <li><a href="{{ url_for('recruit',  team='men') }}">Recruit</a></li>
-              <li><a href="{{ url_for('fan',      team='men') }}">Fan Zone</a></li>
+              <li><a href="{{ url_for('players', team='men') }}">Men's</a></li>
+              <li><a href="{{ url_for('players', team='women') }}">Women's</a></li>
             </ul>
           </li>
 
-          <!-- Women's dropdown -->
+          <!-- Coaches dropdown -->
           <li class="dropdown">
             <button class="nav-link dropdown-toggle
-              {% if request.view_args and request.view_args.get('team') == 'women' %}active{% endif %}"
-              aria-haspopup="true" aria-expanded="false">
-              Women's ▾
-            </button>
+              {% if request.endpoint == 'coaches' %}active{% endif %}"
+              aria-haspopup="true" aria-expanded="false">Coaches ▾</button>
             <ul class="dropdown-menu">
-              <li><a href="{{ url_for('players',  team='women') }}">Roster</a></li>
-              <li><a href="{{ url_for('coaches',  team='women') }}">Coaches</a></li>
-              <li><a href="{{ url_for('schedule', team='women') }}">Schedule</a></li>
-              <li><a href="{{ url_for('recruit',  team='women') }}">Recruit</a></li>
-              <li><a href="{{ url_for('fan',      team='women') }}">Fan Zone</a></li>
+              <li><a href="{{ url_for('coaches', team='men') }}">Men's</a></li>
+              <li><a href="{{ url_for('coaches', team='women') }}">Women's</a></li>
+            </ul>
+          </li>
+
+          <!-- Schedule dropdown -->
+          <li class="dropdown">
+            <button class="nav-link dropdown-toggle
+              {% if request.endpoint == 'schedule' %}active{% endif %}"
+              aria-haspopup="true" aria-expanded="false">Schedule ▾</button>
+            <ul class="dropdown-menu">
+              <li><a href="{{ url_for('schedule', team='men') }}">Men's</a></li>
+              <li><a href="{{ url_for('schedule', team='women') }}">Women's</a></li>
+            </ul>
+          </li>
+
+          <!-- Fan Zone dropdown -->
+          <li class="dropdown">
+            <button class="nav-link dropdown-toggle
+              {% if request.endpoint == 'fan' %}active{% endif %}"
+              aria-haspopup="true" aria-expanded="false">Fan Zone ▾</button>
+            <ul class="dropdown-menu">
+              <li><a href="{{ url_for('fan', team='men') }}">Men's</a></li>
+              <li><a href="{{ url_for('fan', team='women') }}">Women's</a></li>
+            </ul>
+          </li>
+
+          <!-- Recruit dropdown -->
+          <li class="dropdown">
+            <button class="nav-link dropdown-toggle
+              {% if request.endpoint == 'recruit' %}active{% endif %}"
+              aria-haspopup="true" aria-expanded="false">Recruit ▾</button>
+            <ul class="dropdown-menu">
+              <li><a href="{{ url_for('recruit', team='men') }}">Men's</a></li>
+              <li><a href="{{ url_for('recruit', team='women') }}">Women's</a></li>
             </ul>
           </li>
 
