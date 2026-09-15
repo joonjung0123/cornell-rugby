@@ -3,6 +3,28 @@
 
 {% block content %}
 
+{# ============================================================
+   UNDER CONSTRUCTION — uncomment the block below and comment
+   out the LIVE CONTENT block to show this instead
+   ============================================================
+
+<div class="page-header">
+  <h1>{{ team|title }}'s Rugby Roster</h1>
+</div>
+<div class="content-wrap">
+  <div class="empty-state" style="padding:4rem 1rem;">
+    <p style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">🚧 Under Construction</p>
+    <p>The roster is being updated. Check back soon!</p>
+  </div>
+</div>
+
+   ============================================================ #}
+
+
+{# ============================================================
+   LIVE CONTENT
+   ============================================================ #}
+
 <!-- ── Toolbar ────────────────────────────────────────────────────────────── -->
 <div class="page-toolbar">
   <button class="toolbar-btn" onclick="window.print()">&#128438; Print</button>
@@ -14,7 +36,7 @@
   <a class="sublink" href="{{ url_for('coaches', team=team) }}">&#9658; Go To Coaching Staff</a>
 </div>
 
-<!-- ── Team photo banner ──────────────────────────────────────────────────── -->
+<!-- ── Team photo banner (place photo at static/images/<team>/team.jpg) ──── -->
 <img
   src="{{ url_for('static', filename='images/' + team + '/team.jpg') }}"
   alt="Cornell {{ team|title }}'s Rugby Team Photo"
@@ -38,12 +60,9 @@
       </thead>
       <tbody>
         {% for player in players %}
-        {# One <tr> per player — bio panel lives inside as a hidden full-width row below the data cells #}
         <tr class="roster-table-row {% if loop.index is odd %}row-odd{% else %}row-even{% endif %}"
             data-player-id="{{ loop.index }}"
             {% if player.bio %}style="cursor:pointer;"{% endif %}>
-
-          {# --- visible cells --- #}
           <td class="rt-photo-cell">
             {% if player.photo %}
               <img
@@ -67,8 +86,6 @@
           <td>{{ player.year }}</td>
           <td>{{ player.hometown }}</td>
         </tr>
-
-        {# --- bio expansion row — always in DOM, panel inside is hidden/shown --- #}
         {% if player.bio %}
         <tr class="rt-bio-row">
           <td colspan="6" class="rt-bio-td">
@@ -79,7 +96,6 @@
           </td>
         </tr>
         {% endif %}
-
         {% endfor %}
       </tbody>
     </table>

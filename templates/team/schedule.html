@@ -3,6 +3,28 @@
 
 {% block content %}
 
+{# ============================================================
+   UNDER CONSTRUCTION — uncomment the block below and comment
+   out the LIVE CONTENT block to show this instead
+   ============================================================
+
+<div class="page-header">
+  <h1>{{ team|title }}'s Rugby Schedule</h1>
+</div>
+<div class="content-wrap">
+  <div class="empty-state" style="padding:4rem 1rem;">
+    <p style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">🚧 Under Construction</p>
+    <p>The schedule is being finalised. Check back soon!</p>
+  </div>
+</div>
+
+   ============================================================ #}
+
+
+{# ============================================================
+   LIVE CONTENT
+   ============================================================ #}
+
 <!-- ── Toolbar ────────────────────────────────────────────────────────────── -->
 <div class="page-toolbar">
   <button class="toolbar-btn" onclick="window.print()">&#128438; Print</button>
@@ -13,11 +35,10 @@
   <h1>{{ now.year if now else "2025" }} {{ team|title }}'s Rugby Schedule</h1>
 </div>
 
-<!-- ── Schedule ───────────────────────────────────────────────────────────── -->
+<!-- ── Schedule rows ─────────────────────────────────────────────────────── -->
 <div class="content-wrap">
   {% if schedule %}
 
-    <!-- Column headers -->
     <div class="schedule-header-row">
       <span>Date</span>
       <span>Opponent</span>
@@ -28,10 +49,8 @@
     {% for game in schedule %}
     <div class="schedule-row {% if not game.result %}upcoming{% endif %}">
 
-      <!-- Date -->
       <div class="sched-date">{{ game.date }}</div>
 
-      <!-- Opponent + home/away badge -->
       <div class="sched-opponent">
         <div class="opp-logo-placeholder">
           {{ game.opponent[:3]|upper if game.opponent else '?' }}
@@ -44,10 +63,8 @@
         </div>
       </div>
 
-      <!-- Venue -->
       <div class="sched-venue">{{ game.venue if game.venue else '—' }}</div>
 
-      <!-- Result -->
       <div class="sched-result">
         {% if game.result %}
           {% if game.result.startswith('W') %}
