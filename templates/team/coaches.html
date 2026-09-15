@@ -1,8 +1,63 @@
 {% extends "base.html" %}
-{% block title %}Under Construction — Cornell Rugby{% endblock %}
+{% block title %}{{ team|title }}'s Coaching Staff — Cornell Rugby{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1>Under Construction</h1>
+
+<!-- ── Toolbar ────────────────────────────────────────────────────────────── -->
+<div class="page-toolbar">
+  <button class="toolbar-btn" onclick="window.print()">&#128438; Print</button>
 </div>
+
+<!-- ── Page title ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <h1>{{ now.year if now else "2025" }}-{{ (now.year + 1) if now else "2026" }} {{ team|title }}'s Rugby Coaching Staff</h1>
+</div>
+
+<!-- ── Coaches table ──────────────────────────────────────────────────────── -->
+<div class="content-wrap">
+  {% if coaches %}
+    <table class="coaches-table">
+      <thead>
+        <tr>
+          <th style="width:80px;">Image</th>
+          <th>Name</th>
+          <th>Title / Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for coach in coaches %}
+        <tr class="coach-row" style="cursor:pointer;">
+          <td>
+            {% if coach.photo %}
+              <img
+                class="coach-thumb"
+                src="{{ url_for('static', filename=coach.photo) }}"
+                alt="{{ coach.name }}"
+                loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+            {% endif %}
+            <div class="coach-thumb-placeholder" {% if coach.photo %}style="display:none;"{% endif %}>
+              &#128100;
+            </div>
+          </td>
+          <td>
+            <span class="coach-name-link">{{ coach.name }}</span>
+            {% if coach.bio %}
+              <div class="coach-bio-expand" id="coach-bio-{{ loop.index }}">{{ coach.bio }}</div>
+            {% endif %}
+          </td>
+          <td>{{ coach.role }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if coaches | selectattr('bio') | list %}
+      <p class="text-muted mt-2" style="font-size:0.8rem;">Click a row to expand a coach's bio.</p>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">No coaching staff listed yet. Check back soon!</div>
+  {% endif %}
+</div>
+
 {% endblock %}

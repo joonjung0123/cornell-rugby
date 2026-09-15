@@ -16,7 +16,6 @@ document.querySelectorAll('.dropdown-toggle').forEach(btn => {
     const parent = btn.closest('.dropdown');
     const isOpen = parent.classList.toggle('open');
     btn.setAttribute('aria-expanded', isOpen);
-    // close other dropdowns
     document.querySelectorAll('.dropdown').forEach(d => {
       if (d !== parent) {
         d.classList.remove('open');
@@ -26,7 +25,6 @@ document.querySelectorAll('.dropdown-toggle').forEach(btn => {
   });
 });
 
-// Close dropdowns when clicking outside
 document.addEventListener('click', () => {
   document.querySelectorAll('.dropdown.open').forEach(d => {
     d.classList.remove('open');
@@ -34,10 +32,24 @@ document.addEventListener('click', () => {
   });
 });
 
-// ── Player / Coach bio panel toggle ─────────────────────────────────────────
-document.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('click', () => {
-    const panel = card.querySelector('.bio-panel');
-    if (panel) panel.classList.toggle('open');
+// ── Roster row bio expand ────────────────────────────────────────────────────
+document.querySelectorAll('.roster-row').forEach(row => {
+  row.addEventListener('click', () => {
+    const id = row.dataset.playerId;
+    if (!id) return;
+    const bio = document.getElementById('bio-' + id);
+    if (!bio) return;
+    const isOpen = bio.classList.toggle('open');
+    // update "Full Bio" arrow text
+    const link = row.querySelector('.roster-bio-link');
+    if (link) link.textContent = isOpen ? '▼ Full Bio' : '▶ Full Bio';
+  });
+});
+
+// ── Coach row bio expand ─────────────────────────────────────────────────────
+document.querySelectorAll('.coach-row').forEach((row, i) => {
+  row.addEventListener('click', () => {
+    const bio = document.getElementById('coach-bio-' + (i + 1));
+    if (bio) bio.classList.toggle('open');
   });
 });

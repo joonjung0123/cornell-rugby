@@ -11,16 +11,15 @@
   <!-- ── Navigation ─────────────────────────────────────────────────────── -->
   <header class="site-header">
     <div class="header-inner">
+
       <a href="{{ url_for('home') }}" class="logo-link">
-        <!-- CUSTOMIZE: Replace logo.png in static/images/ with your team logo -->
         <img
           src="{{ url_for('static', filename='images/logo.png') }}"
-          alt="Cornell Rugby Logo"
+          alt="Cornell Rugby"
           class="site-logo"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"
+          onerror="this.style.display='none';"
         />
-        <span class="logo-text-fallback" style="display:none;">Cornell Rugby</span>
-        <span class="site-name">Cornell Rugby</span>
+        <span class="site-name">Rugby</span>
       </a>
 
       <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -29,6 +28,7 @@
 
       <nav class="main-nav" id="main-nav">
         <ul class="nav-list">
+
           <li><a href="{{ url_for('home') }}"
                  class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
 
@@ -40,7 +40,7 @@
               Men's ▾
             </button>
             <ul class="dropdown-menu">
-              <li><a href="{{ url_for('players',  team='men') }}">Players</a></li>
+              <li><a href="{{ url_for('players',  team='men') }}">Roster</a></li>
               <li><a href="{{ url_for('coaches',  team='men') }}">Coaches</a></li>
               <li><a href="{{ url_for('schedule', team='men') }}">Schedule</a></li>
               <li><a href="{{ url_for('recruit',  team='men') }}">Recruit</a></li>
@@ -56,17 +56,29 @@
               Women's ▾
             </button>
             <ul class="dropdown-menu">
-              <li><a href="{{ url_for('players',  team='women') }}">Players</a></li>
+              <li><a href="{{ url_for('players',  team='women') }}">Roster</a></li>
               <li><a href="{{ url_for('coaches',  team='women') }}">Coaches</a></li>
               <li><a href="{{ url_for('schedule', team='women') }}">Schedule</a></li>
               <li><a href="{{ url_for('recruit',  team='women') }}">Recruit</a></li>
               <li><a href="{{ url_for('fan',      team='women') }}">Fan Zone</a></li>
             </ul>
           </li>
+
         </ul>
       </nav>
     </div>
   </header>
+
+  <!-- ── Flash messages ─────────────────────────────────────────────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for category, message in messages %}
+          <li class="flash flash-{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
   <!-- ── Page content ────────────────────────────────────────────────────── -->
   <main class="site-main">
@@ -76,13 +88,12 @@
   <!-- ── Footer ─────────────────────────────────────────────────────────── -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <!-- CUSTOMIZE: Update social links below with your team's actual handles -->
       <div class="footer-social">
         <a href="#" target="_blank" rel="noopener">Instagram</a>
         <a href="#" target="_blank" rel="noopener">X / Twitter</a>
         <a href="mailto:cornellrugby@cornell.edu">Contact Us</a>
       </div>
-      <p class="footer-copy">&copy; {{ now.year if now else "2025" }} Cornell Rugby. All rights reserved.</p>
+      <p class="footer-copy">&copy; {{ now.year if now else "2025" }} Cornell Rugby &mdash; Cornell University. All rights reserved.</p>
     </div>
   </footer>
 

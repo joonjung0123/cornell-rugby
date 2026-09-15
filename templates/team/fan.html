@@ -1,8 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Under Construction — Cornell Rugby{% endblock %}
+{% block title %}Fan Zone — Cornell {{ team|title }}'s Rugby{% endblock %}
 
 {% block content %}
+
 <div class="page-header">
-  <h1>Under Construction</h1>
+  <h1>Fan Zone — Cornell {{ team|title }}'s Rugby</h1>
 </div>
+
+<!-- ── Follow / Social ────────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2 class="fan-section-title">Follow the Team</h2>
+  <div class="social-grid">
+    <div class="social-card">
+      <h3>Instagram</h3>
+      <p style="font-size:0.9rem;color:#444;">Follow us on Instagram for match-day photos, behind-the-scenes content, and team updates.</p>
+      <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@CornellRugby</a>
+    </div>
+    <div class="social-card">
+      <h3>X / Twitter</h3>
+      <p style="font-size:0.9rem;color:#444;">Live match updates, scores, and announcements on X.</p>
+      <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@CornellRugby</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Attend a Match ─────────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2 class="fan-section-title">Attend a Match</h2>
+  <p style="font-size:0.9rem;margin-bottom:1rem;">Home matches are free and open to the public. Come out and support the Big Red!</p>
+  <a href="{{ url_for('schedule', team=team) }}" class="btn btn-primary btn-sm">View Schedule</a>
+</section>
+
+<!-- ── Team Store / Gear ──────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2 class="fan-section-title">Team Gear</h2>
+  <p style="font-size:0.9rem;margin-bottom:1rem;">Show your Big Red pride with official Cornell Rugby apparel.</p>
+  <div class="merch-links">
+    <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Shop Online</a>
+  </div>
+</section>
+
+<!-- ── Contact ────────────────────────────────────────────────────────────── -->
+<section class="fan-section">
+  <h2 class="fan-section-title">Contact Us</h2>
+  <p style="font-size:0.9rem;">Questions? Reach out at
+    <a href="mailto:cornellrugby@cornell.edu">cornellrugby@cornell.edu</a>
+  </p>
+</section>
+
 {% endblock %}

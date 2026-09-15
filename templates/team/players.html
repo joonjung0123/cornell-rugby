@@ -1,51 +1,96 @@
 {% extends "base.html" %}
-{% block title %}{{ team|title }}'s Players — Cornell Rugby{% endblock %}
+{% block title %}{{ team|title }}'s Roster — Cornell Rugby{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <p class="team-label">Cornell Rugby — {{ team|title }}'s Team</p>
-  <h1>Players</h1>
+
+<!-- ── Toolbar ────────────────────────────────────────────────────────────── -->
+<div class="page-toolbar">
+  <button class="toolbar-btn" onclick="window.print()">&#128438; Print</button>
 </div>
 
-<div class="content-wrap">
+<!-- ── Page title ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <h1>{{ now.year if now else "2025" }} {{ team|title }}'s Rugby Roster</h1>
+  <a class="sublink" href="{{ url_for('coaches', team=team) }}">&#9658; Go To Coaching Staff</a>
+</div>
+
+<!-- ── Team photo banner (add team photo to static/images/<team>/team.jpg) ── -->
+{% set team_photo = 'images/' + team + '/team.jpg' %}
+<img
+  src="{{ url_for('static', filename=team_photo) }}"
+  alt="Cornell {{ team|title }}'s Rugby Team Photo"
+  class="team-photo-banner"
+  onerror="this.style.display='none';"
+/>
+
+<!-- ── Roster list ─────────────────────────────────────────────────────────── -->
+<div class="content-wrap" style="padding-top:1.5rem;">
   {% if players %}
-    <div class="card-grid">
+    <div class="roster-list">
       {% for player in players %}
-      <div class="card">
-        {% if player.photo %}
-          <img
-            class="card-photo"
-            src="{{ url_for('static', filename=player.photo) }}"
-            alt="{{ player.name }}"
-            loading="lazy"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-          />
-        {% endif %}
-        <div class="card-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>
-          &#128100;
+
+      {# each player = a clickable row + a hidden bio row below it #}
+      <div class="roster-row" data-player-id="{{ loop.index }}">
+
+        <!-- Photo -->
+        <div class="roster-photo-cell">
+          {% if player.photo %}
+            <img
+              class="roster-photo"
+              src="{{ url_for('static', filename=player.photo) }}"
+              alt="{{ player.name }}"
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+          {% endif %}
+          <div class="roster-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>
+            &#128100;
+          </div>
         </div>
-        <div class="card-body">
-          <div class="card-number">#{{ player.number }} &middot; {{ player.position }}</div>
-          <div class="card-name">{{ player.name }}</div>
-          <div class="card-pos">{{ player.year }}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</div>
+
+        <!-- Name / position -->
+        <div class="roster-main-cell">
+          <div class="roster-position">{{ player.position }}</div>
+          <div class="roster-number-name">
+            <span class="roster-number">{{ player.number }}</span>
+            <span class="roster-name">{{ player.name }}</span>
+          </div>
+          {% if player.bio %}
+            <span class="roster-bio-link">&#9658; Full Bio</span>
+          {% endif %}
         </div>
-        {% if player.bio %}
-        <div class="bio-panel">
-          <p class="bio-meta">
-            {% if player.year %}{{ player.year }}{% endif %}
-            {% if player.hometown %} &middot; {{ player.hometown }}{% endif %}
-          </p>
-          <p>{{ player.bio }}</p>
+
+        <!-- Year / hometown -->
+        <div class="roster-info-cell">
+          {% if player.year %}
+            <div class="roster-year">{{ player.year }}</div>
+          {% endif %}
+          {% if player.hometown %}
+            <div class="roster-hometown">{{ player.hometown }}</div>
+          {% endif %}
         </div>
-        {% endif %}
+
+      </div>{# end .roster-row #}
+
+      {% if player.bio %}
+      <div class="bio-expand-row" id="bio-{{ loop.index }}">
+        <p class="bio-expand-meta">
+          {{ player.position }}
+          {% if player.year %} &middot; {{ player.year }}{% endif %}
+          {% if player.hometown %} &middot; {{ player.hometown }}{% endif %}
+        </p>
+        <p>{{ player.bio }}</p>
       </div>
+      {% endif %}
+
       {% endfor %}
     </div>
-    <p class="text-muted mt-3" style="font-size:0.8rem;">Click a player card to see their bio.</p>
+
+    <p class="text-muted mt-2" style="font-size:0.8rem;">Click a player row to expand their bio.</p>
+
   {% else %}
-    <div class="empty-state">
-      <p>No players listed yet. Check back soon!</p>
-    </div>
+    <div class="empty-state">No players listed yet. Check back soon!</div>
   {% endif %}
 </div>
+
 {% endblock %}
