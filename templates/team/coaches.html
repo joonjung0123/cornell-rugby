@@ -21,12 +21,14 @@
         <tr>
           <th style="width:80px;">Image</th>
           <th>Name</th>
-          <th>Title / Role</th>
+          <th>Title</th>
+          <th>Email Address</th>
+          <th>Phone</th>
         </tr>
       </thead>
       <tbody>
         {% for coach in coaches %}
-        <tr class="coach-row" style="cursor:pointer;">
+        <tr class="coach-row">
           <td>
             {% if coach.photo %}
               <img
@@ -48,12 +50,22 @@
             {% endif %}
           </td>
           <td>{{ coach.role }}</td>
+          <td>
+            {% if coach.email is defined and coach.email %}
+              <a href="mailto:{{ coach.email }}">{{ coach.email }}</a>
+            {% endif %}
+          </td>
+          <td>
+            {% if coach.phone is defined and coach.phone %}
+              {{ coach.phone }}
+            {% endif %}
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% if coaches | selectattr('bio') | list %}
-      <p class="text-muted mt-2" style="font-size:0.8rem;">Click a row to expand a coach's bio.</p>
+      <p class="text-muted mt-2" style="font-size:0.78rem;">Click a name to expand a coach's bio.</p>
     {% endif %}
   {% else %}
     <div class="empty-state">No coaching staff listed yet. Check back soon!</div>

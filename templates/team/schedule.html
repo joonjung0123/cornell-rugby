@@ -36,11 +36,11 @@
         <div class="opp-logo-placeholder">
           {{ game.opponent[:3]|upper if game.opponent else '?' }}
         </div>
-        <div>
+        <div class="opp-info">
+          <span class="opp-name">{{ game.opponent }}</span>
           <span class="opp-badge {% if game.location == 'Home' %}badge-home{% elif game.location == 'Away' %}badge-away{% else %}badge-neutral{% endif %}">
             {% if game.location == 'Home' %}vs{% else %}at{% endif %}
           </span>
-          <span class="opp-name">{{ game.opponent }}</span>
         </div>
       </div>
 

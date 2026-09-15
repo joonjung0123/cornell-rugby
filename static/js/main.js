@@ -46,9 +46,10 @@ document.querySelectorAll('.roster-row').forEach(row => {
   });
 });
 
-// ── Coach row bio expand ─────────────────────────────────────────────────────
-document.querySelectorAll('.coach-row').forEach((row, i) => {
-  row.addEventListener('click', () => {
+// ── Coach name bio expand ────────────────────────────────────────────────────
+document.querySelectorAll('.coach-name-link').forEach((link, i) => {
+  link.addEventListener('click', (e) => {
+    e.stopPropagation();
     const bio = document.getElementById('coach-bio-' + (i + 1));
     if (bio) bio.classList.toggle('open');
   });

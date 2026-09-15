@@ -5,13 +5,14 @@
   --red-light:    #c8393a;
   --white:        #ffffff;
   --off-white:    #f5f5f5;
-  --border:       #e0e0e0;
+  --border:       #dddddd;
   --text:         #1a1a1a;
   --muted:        #666666;
   --win:          #166534;
   --loss:         #991b1b;
 
-  --font: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-sans: -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
   --nav-height: 60px;
   --max-width: 1100px;
 }
@@ -19,7 +20,7 @@
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: var(--font); font-size: 15px; line-height: 1.6; color: var(--text); background: #fff; }
+body { font-family: var(--font-sans); font-size: 14px; line-height: 1.5; color: var(--text); background: #fff; }
 img { max-width: 100%; display: block; }
 a { color: var(--red); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -339,90 +340,139 @@ ul { list-style: none; }
 }
 
 /* ── Roster rows (Cornell Athletics list style) ──────────────────────────── */
-.roster-list { margin-top: 0; }
+.roster-list { margin-top: 0; border-top: 1px solid var(--border); }
 
 .roster-row {
-  display: grid;
-  grid-template-columns: 90px 1fr 1fr;
-  align-items: center;
+  display: flex;
+  align-items: stretch;
   border-bottom: 1px solid var(--border);
   background: #fff;
-  transition: background 0.1s;
   cursor: pointer;
   position: relative;
+  min-height: 90px;
 }
-.roster-row:nth-child(even) { background: var(--off-white); }
-.roster-row:hover { background: #f0e8e8; }
+.roster-row:nth-child(even) { background: #f5f5f5; }
+.roster-row:hover { background: #fdf5f5; }
 
 .roster-photo-cell {
-  padding: 0.5rem 0.75rem;
+  flex-shrink: 0;
+  width: 88px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
 }
 .roster-photo {
-  width: 70px;
-  height: 70px;
+  width: 68px;
+  height: 68px;
   object-fit: cover;
-  object-position: top;
-  background: #ddd;
+  object-position: top center;
+  background: #ccc;
   display: block;
 }
 .roster-photo-placeholder {
-  width: 70px;
-  height: 70px;
+  width: 68px;
+  height: 68px;
   background: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
-  font-size: 1.75rem;
+  color: #aaa;
+  font-size: 2rem;
 }
 
-.roster-main-cell { padding: 0.75rem 0.5rem; }
+/* The main content area to the right of the photo */
+.roster-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 0;
+}
+
+/* Left side: position label + number+name */
+.roster-left {
+  flex: 1;
+  min-width: 0;
+}
 .roster-position {
-  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-bottom: 0.1rem;
+  margin-bottom: 4px;
+  font-weight: 400;
 }
 .roster-number-name {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 8px;
+  margin-bottom: 0;
 }
 .roster-number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   background: var(--red);
   color: #fff;
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
   font-weight: 800;
   flex-shrink: 0;
+  letter-spacing: 0;
 }
 .roster-name {
-  font-size: 1.05rem;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
+  line-height: 1.2;
 }
 
-.roster-info-cell { padding: 0.75rem 0.5rem; }
+/* Right side: year / hometown / bio link */
+.roster-right {
+  flex-shrink: 0;
+  text-align: left;
+  padding-left: 2rem;
+  min-width: 220px;
+}
 .roster-year {
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 700;
+  font-style: italic;
   color: var(--text);
-  margin-bottom: 0.1rem;
+  margin-bottom: 2px;
 }
 .roster-hometown {
-  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
   color: var(--muted);
+  margin-bottom: 4px;
 }
 .roster-bio-link {
+  font-family: var(--font-sans);
   font-size: 0.8rem;
   color: var(--red);
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.2rem;
-  margin-top: 0.25rem;
+  gap: 3px;
+}
+.roster-bio-link::before { content: "▶"; font-size: 0.6rem; }
+
+/* Expand (+) icon on far right */
+.roster-expand-icon {
+  flex-shrink: 0;
+  width: 32px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 6px 8px;
+  align-self: flex-end;
+  font-size: 1.2rem;
+  color: #bbb;
+  font-weight: 300;
+  line-height: 1;
 }
 
 /* Bio expand row */
@@ -430,68 +480,77 @@ ul { list-style: none; }
   display: none;
   background: #fafafa;
   border-bottom: 1px solid var(--border);
-  padding: 1rem 1.5rem 1rem calc(90px + 1rem);
+  padding: 1rem 1.5rem 1rem 100px;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   line-height: 1.7;
   color: var(--text);
 }
 .bio-expand-row.open { display: block; }
-.bio-expand-meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 0.4rem; }
+.bio-expand-meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 0.5rem; }
 
 /* ── Coaches table ───────────────────────────────────────────────────────── */
 .coaches-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  font-size: 0.875rem;
 }
 .coaches-table thead tr {
   background: var(--red);
   color: #fff;
 }
 .coaches-table th {
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 0.9rem;
   text-align: left;
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
   font-weight: 700;
+  font-style: italic;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  color: #fff;
 }
 .coaches-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 0.9rem;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  background: #fff;
 }
-.coaches-table tr:nth-child(even) td { background: var(--off-white); }
-.coaches-table tr:hover td { background: #f0e8e8; }
+.coaches-table tbody tr:nth-child(even) td { background: #f5f5f5; }
+.coaches-table tr:hover td { background: #fdf5f5; }
 .coach-thumb {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
-  object-position: top;
+  object-position: top center;
   display: block;
 }
 .coach-thumb-placeholder {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   background: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
-  font-size: 1.5rem;
+  color: #aaa;
+  font-size: 1.6rem;
 }
 .coach-name-link {
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-weight: 400;
   color: var(--red);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
 }
-.coach-name-link:hover { text-decoration: underline; }
+.coach-name-link:hover { color: var(--red-dark); }
 .coach-bio-expand {
   display: none;
   font-size: 0.85rem;
   color: var(--muted);
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
   line-height: 1.6;
 }
 .coach-bio-expand.open { display: block; }
@@ -499,71 +558,89 @@ ul { list-style: none; }
 /* ── Schedule rows ───────────────────────────────────────────────────────── */
 .schedule-header-row {
   display: grid;
-  grid-template-columns: 120px 1fr 200px 160px;
-  background: var(--off-white);
-  border: 1px solid var(--border);
-  border-bottom: none;
-  padding: 0.5rem 1rem;
+  grid-template-columns: 160px 1fr 220px 130px;
+  border-bottom: 2px solid var(--border);
+  padding: 0.45rem 1rem;
+  font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 400;
   color: var(--muted);
 }
 .schedule-row {
   display: grid;
-  grid-template-columns: 120px 1fr 200px 160px;
+  grid-template-columns: 160px 1fr 220px 130px;
   align-items: center;
-  border: 1px solid var(--border);
-  border-top: none;
+  border-bottom: 1px solid var(--border);
   background: #fff;
   padding: 0.75rem 1rem;
   gap: 0;
+  min-height: 68px;
 }
-.schedule-row:nth-child(even) { background: var(--off-white); }
-.schedule-row:hover { background: #f0e8e8; }
-.schedule-row.upcoming { color: var(--muted); }
+.schedule-row:hover { background: #fdf5f5; }
 
-.sched-date { font-size: 0.85rem; font-weight: 700; }
+.sched-date {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
 .sched-opponent {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
 }
 .opp-logo-placeholder {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   background: #e8e8e8;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #999;
   flex-shrink: 0;
   font-weight: 700;
   text-align: center;
   line-height: 1.2;
+  border: 1px solid #ddd;
 }
-.opp-name { font-size: 0.95rem; font-weight: 700; }
+.opp-info { display: flex; flex-direction: column; gap: 2px; }
+.opp-name {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
 .opp-badge {
   display: inline-block;
-  padding: 0.1rem 0.45rem;
+  padding: 1px 6px;
+  font-family: var(--font-sans);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-left: 0.5rem;
+  text-transform: lowercase;
+  color: #fff;
+  width: fit-content;
 }
-.badge-home { background: #B31B1B; color: #fff; }
-.badge-away { background: #555; color: #fff; }
-.badge-neutral { background: #888; color: #fff; }
+.badge-home { background: var(--red); }
+.badge-away { background: #444; }
+.badge-neutral { background: #888; }
 
-.sched-venue { font-size: 0.85rem; color: var(--muted); }
-.sched-result { font-size: 0.9rem; font-weight: 700; }
+.sched-venue {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+.sched-result {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
 .result-win  { color: var(--win); }
 .result-loss { color: var(--loss); }
-.result-upcoming { color: var(--muted); font-style: italic; font-weight: 400; font-size: 0.85rem; }
+.result-upcoming { color: var(--muted); font-style: italic; font-weight: 400; font-size: 0.82rem; }
 
 /* ── Recruit page ────────────────────────────────────────────────────────── */
 .recruit-hero {
@@ -713,16 +790,19 @@ ul { list-style: none; }
   .home-sections { grid-template-columns: 1fr; }
   .social-grid { grid-template-columns: 1fr; }
   .hero-title { font-size: 1.9rem; }
-  .roster-row { grid-template-columns: 80px 1fr; }
-  .roster-info-cell { display: none; }
+  .roster-right { display: none; }
   .schedule-row,
-  .schedule-header-row { grid-template-columns: 100px 1fr 130px; }
-  .sched-result { display: none; }
+  .schedule-header-row { grid-template-columns: 120px 1fr 100px; }
+  .sched-venue { display: none; }
   .coaches-table thead th:nth-child(3),
-  .coaches-table td:nth-child(3) { display: none; }
+  .coaches-table td:nth-child(3),
+  .coaches-table thead th:nth-child(4),
+  .coaches-table td:nth-child(4),
+  .coaches-table thead th:nth-child(5),
+  .coaches-table td:nth-child(5) { display: none; }
 }
 @media (max-width: 480px) {
   .schedule-row,
-  .schedule-header-row { grid-template-columns: 90px 1fr; }
-  .sched-venue { display: none; }
+  .schedule-header-row { grid-template-columns: 100px 1fr; }
+  .sched-result { display: none; }
 }
