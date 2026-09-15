@@ -68,12 +68,14 @@
           <td>{{ player.hometown }}</td>
         </tr>
 
-        {# --- bio expansion row — only rendered if bio exists --- #}
+        {# --- bio expansion row — always in DOM, panel inside is hidden/shown --- #}
         {% if player.bio %}
-        <tr class="rt-bio-row" id="bio-{{ loop.index }}">
+        <tr class="rt-bio-row">
           <td colspan="6" class="rt-bio-td">
-            <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
-            <p>{{ player.bio }}</p>
+            <div class="bio-panel" id="bio-{{ loop.index }}">
+              <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
+              <p>{{ player.bio }}</p>
+            </div>
           </td>
         </tr>
         {% endif %}
