@@ -38,7 +38,12 @@
       </thead>
       <tbody>
         {% for player in players %}
-        <tr class="roster-table-row" data-player-id="{{ loop.index }}" {% if player.bio %}style="cursor:pointer;"{% endif %}>
+        {# One <tr> per player — bio panel lives inside as a hidden full-width row below the data cells #}
+        <tr class="roster-table-row {% if loop.index is odd %}row-odd{% else %}row-even{% endif %}"
+            data-player-id="{{ loop.index }}"
+            {% if player.bio %}style="cursor:pointer;"{% endif %}>
+
+          {# --- visible cells --- #}
           <td class="rt-photo-cell">
             {% if player.photo %}
               <img
@@ -62,14 +67,17 @@
           <td>{{ player.year }}</td>
           <td>{{ player.hometown }}</td>
         </tr>
+
+        {# --- bio expansion row — only rendered if bio exists --- #}
         {% if player.bio %}
         <tr class="rt-bio-row" id="bio-{{ loop.index }}">
-          <td colspan="6">
+          <td colspan="6" class="rt-bio-td">
             <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
             <p>{{ player.bio }}</p>
           </td>
         </tr>
         {% endif %}
+
         {% endfor %}
       </tbody>
     </table>
