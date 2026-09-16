@@ -438,6 +438,8 @@ def admin_upload_csv():
             flash("No file selected.", "error")
             return redirect(url_for("admin_upload_csv"))
 
+        replace_mode = request.form.get("replace") == "1"
+
         # Read as UTF-8 text (handle BOM from Excel exports)
         raw = f.read().decode("utf-8-sig")
         reader = csv.DictReader(io.StringIO(raw))
@@ -449,9 +451,12 @@ def admin_upload_csv():
             if key:
                 col_map[header] = key
 
-        added   = {"men": 0, "women": 0}
-        skipped = 0
-        updated_teams = set()
+        added    = {"men": 0, "women": 0}
+        skipped  = 0
+        # In replace mode, track which teams have been wiped so we only do it once
+        wiped    = set()
+        # Accumulate all rows first so we can wipe-then-write atomically per team
+        rows_by_team = {"men": [], "women": []}
 
         for raw_row in reader:
             # Normalise row using col_map
@@ -476,34 +481,46 @@ def admin_upload_csv():
                 skipped += 1
                 continue
 
-            player = {
-                "id":       _make_id(name),
-                "name":     name,
-                "number":   "",          # not in form — fill manually
-                "position": row.get("position", ""),
-                "year":     row.get("year", ""),
-                "hometown": row.get("hometown", ""),
-                "bio":      _build_bio(row, team),
-                "photo":    "",          # not in form — upload manually
-            }
+            rows_by_team[team].append(row)
+
+        # Now write each team's data
+        for team, team_rows in rows_by_team.items():
+            if not team_rows:
+                continue
 
             path = f"data/{team}/players.json"
-            players = helpers.load_json(path)
 
-            # Update existing entry if same id already exists, else append
-            existing = next((i for i, p in enumerate(players)
-                             if p.get("id") == player["id"]), None)
-            if existing is not None:
-                # Preserve manually-set number and photo
-                player["number"] = players[existing].get("number", "")
-                player["photo"]  = players[existing].get("photo", "")
-                players[existing] = player
+            if replace_mode:
+                # Start with a clean slate
+                players = []
             else:
-                players.append(player)
-                added[team] += 1
+                players = helpers.load_json(path)
+
+            for row in team_rows:
+                name = row.get("name", "").strip()
+                player = {
+                    "id":       _make_id(name),
+                    "name":     name,
+                    "number":   "",
+                    "position": row.get("position", ""),
+                    "year":     row.get("year", ""),
+                    "hometown": row.get("hometown", ""),
+                    "bio":      _build_bio(row, team),
+                    "photo":    "",
+                }
+
+                existing = next((i for i, p in enumerate(players)
+                                 if p.get("id") == player["id"]), None)
+                if existing is not None:
+                    # Preserve manually-set number and photo
+                    player["number"] = players[existing].get("number", "")
+                    player["photo"]  = players[existing].get("photo", "")
+                    players[existing] = player
+                else:
+                    players.append(player)
+                    added[team] += 1
 
             helpers.save_json(path, players)
-            updated_teams.add(team)
 
         parts = []
         for team in ("men", "women"):

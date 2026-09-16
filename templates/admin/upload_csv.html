@@ -30,6 +30,19 @@
     </p>
   </div>
 
+  <div style="margin-bottom:1.5rem;padding:0.85rem 1rem;background:#fff8f0;border:1px solid #f5c97a;border-left:4px solid #e09b00;">
+    <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;">
+      <input type="checkbox" name="replace" value="1" style="margin-top:3px;flex-shrink:0;" />
+      <span>
+        <strong style="font-size:0.85rem;">Replace existing roster</strong><br>
+        <span style="font-size:0.78rem;color:#666;">
+          Removes all current players for each team found in this CSV, then imports fresh.
+          Use this for a clean first import. Leave unticked to only add/update players.
+        </span>
+      </span>
+    </label>
+  </div>
+
   <button type="submit" class="btn btn-primary">Upload &amp; Import</button>
 </form>
 
