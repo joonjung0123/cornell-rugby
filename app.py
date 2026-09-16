@@ -50,17 +50,24 @@ def allowed_file(filename):
 
 
 def save_upload(file, team, subfolder=""):
-    """Save an uploaded image to static/images/<team>/ and return the relative path."""
+    """Save an uploaded image to static/images/<team>/[subfolder]/ and return the relative path."""
     if not file or file.filename == "":
         return None
     if not allowed_file(file.filename):
         return None
     ext = file.filename.rsplit(".", 1)[1].lower()
     unique_name = f"{uuid.uuid4().hex}.{ext}"
-    save_dir = os.path.join("static", "images", team)
+    parts = ["static", "images", team]
+    if subfolder:
+        parts.append(subfolder)
+    save_dir = os.path.join(*parts)
     os.makedirs(save_dir, exist_ok=True)
     file.save(os.path.join(save_dir, unique_name))
-    return f"images/{team}/{unique_name}"
+    rel_parts = ["images", team]
+    if subfolder:
+        rel_parts.append(subfolder)
+    rel_parts.append(unique_name)
+    return "/".join(rel_parts)
 
 
 # ── Home ──────────────────────────────────────────────────────────────────────
@@ -302,12 +309,18 @@ def admin_schedule_add(team):
     if team not in VALID_TEAMS:
         abort(404)
     if request.method == "POST":
+        logo_path = ""
+        if "logo" in request.files:
+            saved = save_upload(request.files["logo"], team, subfolder="logos")
+            if saved:
+                logo_path = saved
         entry = {
             "date":     request.form.get("date", "").strip(),
             "opponent": request.form.get("opponent", "").strip(),
             "location": request.form.get("location", "Home"),
             "venue":    request.form.get("venue", "").strip(),
             "result":   request.form.get("result", "").strip(),
+            "logo":     logo_path,
         }
         data = helpers.load_json(f"data/{team}/schedule.json")
         data.append(entry)
@@ -328,6 +341,10 @@ def admin_schedule_edit(team, idx):
         abort(404)
     game = data[idx]
     if request.method == "POST":
+        if "logo" in request.files and request.files["logo"].filename:
+            saved = save_upload(request.files["logo"], team, subfolder="logos")
+            if saved:
+                game["logo"] = saved
         game["date"]     = request.form.get("date", "").strip()
         game["opponent"] = request.form.get("opponent", "").strip()
         game["location"] = request.form.get("location", "Home")

@@ -52,9 +52,19 @@
       <div class="sched-date">{{ game.date }}</div>
 
       <div class="sched-opponent">
-        <div class="opp-logo-placeholder">
-          {{ game.opponent[:3]|upper if game.opponent else '?' }}
-        </div>
+        {% if game.logo %}
+          <img src="{{ url_for('static', filename=game.logo) }}"
+               class="opp-logo-img"
+               alt="{{ game.opponent }}"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="opp-logo-placeholder" style="display:none;">
+            {{ game.opponent[:3]|upper if game.opponent else '?' }}
+          </div>
+        {% else %}
+          <div class="opp-logo-placeholder">
+            {{ game.opponent[:3]|upper if game.opponent else '?' }}
+          </div>
+        {% endif %}
         <div class="opp-info">
           <span class="opp-name">{{ game.opponent }}</span>
           <span class="opp-badge {% if game.location == 'Home' %}badge-home{% elif game.location == 'Away' %}badge-away{% else %}badge-neutral{% endif %}">

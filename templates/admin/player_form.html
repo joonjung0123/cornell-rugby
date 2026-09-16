@@ -49,14 +49,79 @@
   </div>
 
   <div class="form-group">
-    <label for="photo">Photo (jpg, png, gif, webp)</label>
-    {% if player and player.photo %}
-      <p style="font-size:0.8rem; color:#57606a; margin-bottom:0.3rem;">
-        Current: {{ player.photo }} — upload a new file to replace it.
+    <label for="photo">Photo</label>
+
+    <!-- Drop zone -->
+    <div id="drop-zone"
+         style="border:2px dashed #ccc;border-radius:4px;padding:1.5rem 1rem;text-align:center;
+                cursor:pointer;background:#fafafa;transition:border-color 0.15s,background 0.15s;">
+
+      <!-- Preview: current photo or selected file -->
+      {% if player and player.photo %}
+        <img id="photo-preview"
+             src="{{ url_for('static', filename=player.photo) }}"
+             style="max-height:140px;max-width:100%;margin:0 auto 0.75rem;display:block;object-fit:contain;"
+             onerror="this.style.display='none';" />
+      {% else %}
+        <img id="photo-preview" src="" alt=""
+             style="max-height:140px;max-width:100%;margin:0 auto 0.75rem;display:none;object-fit:contain;" />
+      {% endif %}
+
+      <p id="drop-label" style="font-size:0.85rem;color:#666;margin:0;">
+        {% if player and player.photo %}
+          Drag &amp; drop a new photo here, or <strong>click to browse</strong> to replace it.
+        {% else %}
+          Drag &amp; drop a photo here, or <strong>click to browse</strong>.
+        {% endif %}
       </p>
-    {% endif %}
-    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.gif,.webp" />
+      <p style="font-size:0.75rem;color:#aaa;margin:0.3rem 0 0;">JPG, PNG, GIF, WEBP accepted</p>
+
+      <input type="file" id="photo" name="photo"
+             accept=".jpg,.jpeg,.png,.gif,.webp"
+             style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;" />
+    </div>
   </div>
+
+  <style>
+    #drop-zone { position: relative; }
+    #drop-zone.dragover { border-color: #B31B1B; background: #fff5f5; }
+  </style>
+  <script>
+    (function () {
+      const zone    = document.getElementById('drop-zone');
+      const input   = document.getElementById('photo');
+      const preview = document.getElementById('photo-preview');
+      const label   = document.getElementById('drop-label');
+
+      function showPreview(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          label.textContent = file.name;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      input.addEventListener('change', () => showPreview(input.files[0]));
+
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', ()  => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          // Transfer to the real file input
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          input.files = dt.files;
+          showPreview(file);
+        }
+      });
+    })();
+  </script>
 
   <button type="submit" class="btn btn-primary">{{ action }} Player</button>
   <a href="{{ url_for('admin_players', team=team) }}" class="btn" style="background:#e5e7eb; margin-left:0.5rem;">Cancel</a>
