@@ -36,14 +36,20 @@
     <div class="social-card">
       <h3>Instagram</h3>
       <p style="font-size:0.9rem;color:#444;">Follow us on Instagram for match-day photos, behind-the-scenes content, and team updates.</p>
-      <!-- CUSTOMIZE: replace # with the actual Instagram URL -->
-      <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@CornellRugby</a>
+      {% if team == "men" %}
+        <a href="https://www.instagram.com/cornellrugby" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@MENS_INSTAGRAM_HANDLE</a>
+      {% else %}
+        <a href="https://www.instagram.com/cornellwomensrugby" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@WOMENS_INSTAGRAM_HANDLE</a>
+      {% endif %}
     </div>
     <div class="social-card">
       <h3>X / Twitter</h3>
       <p style="font-size:0.9rem;color:#444;">Live match updates, scores, and announcements on X.</p>
-      <!-- CUSTOMIZE: replace # with the actual X/Twitter URL -->
-      <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@CornellRugby</a>
+      {% if team == "men" %}
+        <a href="https://x.com/CornellRugby" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@MENS_TWITTER_HANDLE</a>
+      {% else %}
+        <a href="https://x.com/cornell_w_rugby" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">@WOMENS_TWITTER_HANDLE</a>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -59,18 +65,27 @@
 <section class="fan-section">
   <h2 class="fan-section-title">Team Gear</h2>
   <p style="font-size:0.9rem;margin-bottom:1rem;">Show your Big Red pride with official Cornell Rugby apparel.</p>
-  <!-- CUSTOMIZE: replace # with the real store URL -->
   <div class="merch-links">
-    <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Shop Online</a>
+    {% if team == "men" %}
+      <a href="hypeteamstores.com/cornell-rugby-store-fall-2026" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Shop Online</a>
+    {% else %}
+      <a href="hypeteamstores.com/cornell-rugby-store-fall-2026" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Shop Online</a>
+    {% endif %}
   </div>
 </section>
 
 <!-- ── Contact ────────────────────────────────────────────────────────────── -->
 <section class="fan-section">
   <h2 class="fan-section-title">Contact Us</h2>
-  <p style="font-size:0.9rem;">Questions? Reach out at
-    <a href="mailto:cornellrugby@cornell.edu">cornellrugby@cornell.edu</a>
-  </p>
+  {% if team == "men" %}
+    <p style="font-size:0.9rem;">Questions? Reach out at
+      <a href="mailto:MENS_CONTACT_EMAIL">MENS_CONTACT_EMAIL</a>
+    </p>
+  {% else %}
+    <p style="font-size:0.9rem;">Questions? Reach out at
+      <a href="mailto:WOMENS_CONTACT_EMAIL">WOMENS_CONTACT_EMAIL</a>
+    </p>
+  {% endif %}
 </section>
 
 {% endblock %}
