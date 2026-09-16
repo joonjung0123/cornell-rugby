@@ -89,7 +89,11 @@
           <td colspan="5" class="rt-bio-td">
             <div class="bio-panel" id="bio-{{ loop.index }}">
               <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
-              <p>{{ player.bio }}</p>
+              {% for line in player.bio.split('\n') %}
+                {% if line.strip() %}
+                  <p>{{ line.strip() }}</p>
+                {% endif %}
+              {% endfor %}
             </div>
           </td>
         </tr>

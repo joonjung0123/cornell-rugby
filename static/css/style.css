@@ -381,7 +381,9 @@ ul { list-style: none; }
   color: var(--text);
 }
 .bio-panel.open { display: block; }
-.rt-bio-meta { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.35rem; }
+.bio-panel p { margin-bottom: 0.4rem; }
+.bio-panel p:last-child { margin-bottom: 0; }
+.rt-bio-meta { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.5rem; }
 
 .roster-table td {
   padding: 0.65rem 0.9rem;
