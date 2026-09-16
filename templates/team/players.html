@@ -47,60 +47,69 @@
 <!-- ── Roster table ───────────────────────────────────────────────────────── -->
 <div class="content-wrap" style="padding-top:1.5rem;">
   {% if players %}
-    <table class="roster-table">
-      <thead>
-        <tr>
-          <th style="width:80px;">Photo</th>
-          <th style="width:110px;">Position</th>
-          <th>Name</th>
-          <th>Year</th>
-          <th>Hometown</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for player in players %}
-        <tr class="roster-table-row {% if loop.index is odd %}row-odd{% else %}row-even{% endif %}"
-            data-player-id="{{ loop.index }}"
-            {% if player.bio %}style="cursor:pointer;"{% endif %}>
-          <td class="rt-photo-cell">
-            {% if player.photo %}
-              <img
-                class="rt-photo"
-                src="{{ url_for('static', filename=player.photo) }}"
-                alt="{{ player.name }}"
-                loading="lazy"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-              />
-            {% endif %}
-            <div class="rt-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>&#128100;</div>
-          </td>
-          <td class="rt-number">{{ player.position }}</td>
-          <td class="rt-name">
-            {{ player.name }}
-            {% if player.bio %}
-              <span class="rt-bio-toggle">&#9658; Full Bio</span>
-            {% endif %}
-          </td>
-          <td>{{ player.year }}</td>
-          <td>{{ player.hometown }}</td>
-        </tr>
-        {% if player.bio %}
-        <tr class="rt-bio-row">
-          <td colspan="5" class="rt-bio-td">
-            <div class="bio-panel" id="bio-{{ loop.index }}">
-              <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
-              {% for line in player.bio.split('\n') %}
-                {% if line.strip() %}
-                  <p>{{ line.strip() }}</p>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table class="roster-table">
+        <thead>
+          <tr>
+            <th class="col-photo" style="width:70px;">Photo</th>
+            <th class="col-pos" style="width:100px;">Position</th>
+            <th class="col-name">Name</th>
+            <th class="col-year" style="width:90px;">Year</th>
+            <th class="col-hometown">Hometown</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for player in players %}
+          <tr class="roster-table-row {% if loop.index is odd %}row-odd{% else %}row-even{% endif %}"
+              data-player-id="{{ loop.index }}"
+              {% if player.bio %}style="cursor:pointer;"{% endif %}>
+            <td class="rt-photo-cell col-photo">
+              {% if player.photo %}
+                <img
+                  class="rt-photo"
+                  src="{{ url_for('static', filename=player.photo) }}"
+                  alt="{{ player.name }}"
+                  width="60"
+                  height="60"
+                  loading="lazy"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                />
+              {% endif %}
+              <div class="rt-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>&#128100;</div>
+            </td>
+            <td class="rt-number col-pos">{{ player.position }}</td>
+            <td class="rt-name col-name">
+              {{ player.name }}
+              <div class="rt-mobile-sub">
+                {% if player.position %}<span class="rt-mobile-pos">{{ player.position }}</span>{% endif %}
+                {% if player.year %}<span class="rt-mobile-year">{{ player.year }}</span>{% endif %}
+                {% if player.hometown %}<span class="rt-mobile-ht">{{ player.hometown }}</span>{% endif %}
+              </div>
+              {% if player.bio %}
+                <span class="rt-bio-toggle">&#9658; Full Bio</span>
+              {% endif %}
+            </td>
+            <td class="col-year">{{ player.year }}</td>
+            <td class="col-hometown">{{ player.hometown }}</td>
+          </tr>
+          {% if player.bio %}
+          <tr class="rt-bio-row">
+            <td colspan="5" class="rt-bio-td">
+              <div class="bio-panel" id="bio-{{ loop.index }}">
+                <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
+                {% for line in player.bio.split('\n') %}
+                  {% if line.strip() %}
+                    <p>{{ line.strip() }}</p>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% if players | selectattr('bio') | list %}
       <p class="text-muted mt-2" style="font-size:0.78rem;">Click a row to read a player's bio.</p>
     {% endif %}

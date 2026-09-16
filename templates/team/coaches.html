@@ -37,52 +37,67 @@
 <!-- ── Coaches table ──────────────────────────────────────────────────────── -->
 <div class="content-wrap">
   {% if coaches %}
-    <table class="coaches-table">
-      <thead>
-        <tr>
-          <th style="width:80px;">Image</th>
-          <th>Name</th>
-          <th>Title</th>
-          <th>Email Address</th>
-          <th>Phone</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for coach in coaches %}
-        <tr class="coach-row">
-          <td>
-            {% if coach.photo %}
-              <img
-                class="coach-thumb"
-                src="{{ url_for('static', filename=coach.photo) }}"
-                alt="{{ coach.name }}"
-                loading="lazy"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-              />
-            {% endif %}
-            <div class="coach-thumb-placeholder" {% if coach.photo %}style="display:none;"{% endif %}>&#128100;</div>
-          </td>
-          <td>
-            <span class="coach-name-link">{{ coach.name }}</span>
-            {% if coach.bio %}
-              <div class="coach-bio-expand" id="coach-bio-{{ loop.index }}">{{ coach.bio }}</div>
-            {% endif %}
-          </td>
-          <td>{{ coach.role }}</td>
-          <td>
-            {% if coach.email is defined and coach.email %}
-              <a href="mailto:{{ coach.email }}">{{ coach.email }}</a>
-            {% endif %}
-          </td>
-          <td>
-            {% if coach.phone is defined and coach.phone %}
-              {{ coach.phone }}
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table class="coaches-table">
+        <thead>
+          <tr>
+            <th class="col-coach-photo" style="width:70px;">Image</th>
+            <th class="col-coach-name">Name</th>
+            <th class="col-coach-title">Title</th>
+            <th class="col-coach-email">Email Address</th>
+            <th class="col-coach-phone">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for coach in coaches %}
+          <tr class="coach-row">
+            <td class="col-coach-photo">
+              {% if coach.photo %}
+                <img
+                  class="coach-thumb"
+                  src="{{ url_for('static', filename=coach.photo) }}"
+                  alt="{{ coach.name }}"
+                  width="60"
+                  height="60"
+                  loading="lazy"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                />
+              {% endif %}
+              <div class="coach-thumb-placeholder" {% if coach.photo %}style="display:none;"{% endif %}>&#128100;</div>
+            </td>
+            <td class="col-coach-name">
+              <span class="coach-name-link">{{ coach.name }}</span>
+              <div class="coach-mobile-info">
+                {% if coach.role %}<div class="coach-mobile-role">{{ coach.role }}</div>{% endif %}
+                <div class="coach-mobile-contacts">
+                  {% if coach.email is defined and coach.email %}
+                    <a href="mailto:{{ coach.email }}" class="coach-contact-link">✉ {{ coach.email }}</a>
+                  {% endif %}
+                  {% if coach.phone is defined and coach.phone %}
+                    <a href="tel:{{ coach.phone }}" class="coach-contact-link">☎ {{ coach.phone }}</a>
+                  {% endif %}
+                </div>
+              </div>
+              {% if coach.bio %}
+                <div class="coach-bio-expand" id="coach-bio-{{ loop.index }}">{{ coach.bio }}</div>
+              {% endif %}
+            </td>
+            <td class="col-coach-title">{{ coach.role }}</td>
+            <td class="col-coach-email">
+              {% if coach.email is defined and coach.email %}
+                <a href="mailto:{{ coach.email }}">{{ coach.email }}</a>
+              {% endif %}
+            </td>
+            <td class="col-coach-phone">
+              {% if coach.phone is defined and coach.phone %}
+                <a href="tel:{{ coach.phone }}">{{ coach.phone }}</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% if coaches | selectattr('bio') | list %}
       <p class="text-muted mt-2" style="font-size:0.78rem;">Click a name to expand a coach's bio.</p>
     {% endif %}
