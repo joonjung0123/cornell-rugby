@@ -16,7 +16,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for idx, game in schedule|enumerate %}
+    {% for idx, game in enumerate(schedule) %}
     <tr>
       <td>{{ game.date }}</td>
       <td><strong>{{ game.opponent }}</strong></td>
