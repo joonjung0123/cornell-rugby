@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Cornell Rugby</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <style>
+    body { background: #f0f2f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .login-box {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-top: 4px solid #B31B1B;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+    }
+    .login-box h1 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem; color: #1a1a1a; }
+    .login-box p  { font-size: 0.8rem; color: #888; margin-bottom: 1.5rem; }
+    .login-box label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+    .login-box input[type="password"] {
+      width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #ddd;
+      font-size: 0.95rem; margin-bottom: 1.25rem; box-sizing: border-box;
+    }
+    .login-box input[type="password"]:focus { outline: 2px solid #B31B1B; border-color: #B31B1B; }
+    .flash-error { background: #fee2e2; border-left: 4px solid #dc2626; color: #991b1b; padding: 0.6rem 0.85rem; font-size: 0.85rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>Cornell Rugby</h1>
+    <p>Admin Panel — enter the password to continue.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autofocus autocomplete="current-password" />
+      <button type="submit" class="btn btn-primary" style="width:100%;">Log In</button>
+    </form>
+  </div>
+</body>
+</html>

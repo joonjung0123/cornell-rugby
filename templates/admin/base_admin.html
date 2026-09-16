@@ -29,6 +29,7 @@
   <div class="admin-topbar">
     <strong>Cornell Rugby — Admin Panel</strong>
     <a href="{{ url_for('home') }}">← View Site</a>
+    <a href="{{ url_for('admin_logout') }}" style="margin-left:1rem;">Log Out</a>
   </div>
   <div class="admin-wrap">
     {% with messages = get_flashed_messages(with_categories=true) %}

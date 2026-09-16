@@ -12,6 +12,7 @@ WorkingDirectory=/home/cornellrugby/cornell-rugby
 
 # CUSTOMIZE: Set SECRET_KEY to a long random string (e.g. run: python3 -c "import secrets; print(secrets.token_hex(32))")
 Environment="SECRET_KEY=replace-with-a-long-random-secret"
+Environment="ADMIN_PASSWORD=replace-with-your-admin-password"
 
 ExecStart=/home/cornellrugby/cornell-rugby/venv/bin/gunicorn \
     --workers 3 \

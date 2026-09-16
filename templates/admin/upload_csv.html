@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Upload CSV — Cornell Rugby Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header mt-2">
+  <h1 style="font-size:1.5rem;">Upload Player CSV</h1>
+  <a href="{{ url_for('admin_dashboard') }}" style="font-size:0.875rem;">← Back to Dashboard</a>
+</div>
+
+<p style="font-size:0.9rem;color:#555;margin-bottom:1.5rem;max-width:640px;">
+  Export your Google Form responses as a <strong>.csv</strong> file (File → Download → CSV in Google Sheets),
+  then upload it here. Players will be added to whichever team they selected in the form.
+  If a player already exists (matched by name), their record is updated — their jersey number
+  and photo are preserved.
+</p>
+
+<!-- Upload form -->
+<form method="POST" enctype="multipart/form-data"
+      style="max-width:480px;background:#fff;border:1px solid #e0e0e0;padding:2rem;">
+
+  <div style="margin-bottom:1.25rem;">
+    <label style="display:block;font-weight:700;font-size:0.85rem;text-transform:uppercase;
+                  letter-spacing:0.03em;margin-bottom:0.5rem;">
+      Google Form CSV File
+    </label>
+    <input type="file" name="csvfile" accept=".csv"
+           style="font-size:0.9rem;width:100%;" required />
+    <p style="font-size:0.78rem;color:#888;margin-top:0.4rem;">
+      Accepts .csv exported from Google Sheets or Excel.
+    </p>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Upload &amp; Import</button>
+</form>
+
+<!-- Field mapping reference -->
+<div style="margin-top:2.5rem;max-width:640px;">
+  <h2 style="font-size:1rem;font-weight:800;border-bottom:2px solid #B31B1B;
+             padding-bottom:0.35rem;margin-bottom:1rem;">
+    Column Mapping Reference
+  </h2>
+  <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+    <thead>
+      <tr style="background:#B31B1B;color:#fff;">
+        <th style="padding:0.5rem 0.75rem;text-align:left;">Google Form Column</th>
+        <th style="padding:0.5rem 0.75rem;text-align:left;">Saved As</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in [
+        ("Name as it appears on the Website",      "Name"),
+        ("For which team are you playing/coaching?","Team (men / women)"),
+        ("Position",                                "Position"),
+        ("Graduation Year",                         "Year"),
+        ("Hometown, State/Province/Country",        "Hometown"),
+        ("Height in Feet and Inch",                 "Added to Bio"),
+        ("Weight in pounds (lbs)",                  "Added to Bio (if not 0)"),
+        ("Major",                                   "Added to Bio"),
+        ("College or School enrolled",              "Added to Bio"),
+        ("Full Bio",                                "Bio"),
+        ("— (not in form) —",                      "Jersey # — fill manually in admin"),
+        ("— (not in form) —",                      "Photo — upload manually in admin"),
+      ] %}
+      <tr style="border-bottom:1px solid #e0e0e0;{% if loop.index is even %}background:#f5f5f5;{% endif %}">
+        <td style="padding:0.5rem 0.75rem;">{{ row[0] }}</td>
+        <td style="padding:0.5rem 0.75rem;color:#555;">{{ row[1] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -8,6 +8,19 @@
 
 <p class="text-muted mb-2">Select a section to manage:</p>
 
+<!-- CSV Upload shortcut -->
+<div style="background:#fff;border:1px solid #e0e0e0;border-left:4px solid #B31B1B;
+            padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;
+            justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+  <div>
+    <strong style="font-size:0.9rem;">📥 Import players from Google Form CSV</strong>
+    <p style="font-size:0.8rem;color:#666;margin-top:0.2rem;">
+      Export your Google Sheet as .csv and upload here — players are added automatically.
+    </p>
+  </div>
+  <a href="{{ url_for('admin_upload_csv') }}" class="btn btn-primary btn-sm">Upload CSV</a>
+</div>
+
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
 
   <!-- Men's Team -->

@@ -51,9 +51,8 @@
       <thead>
         <tr>
           <th style="width:80px;">Photo</th>
-          <th style="width:60px;">#</th>
+          <th style="width:110px;">Position</th>
           <th>Name</th>
-          <th>Position</th>
           <th>Year</th>
           <th>Hometown</th>
         </tr>
@@ -75,20 +74,19 @@
             {% endif %}
             <div class="rt-photo-placeholder" {% if player.photo %}style="display:none;"{% endif %}>&#128100;</div>
           </td>
-          <td class="rt-number">{{ player.number }}</td>
+          <td class="rt-number">{{ player.position }}</td>
           <td class="rt-name">
             {{ player.name }}
             {% if player.bio %}
               <span class="rt-bio-toggle">&#9658; Full Bio</span>
             {% endif %}
           </td>
-          <td>{{ player.position }}</td>
           <td>{{ player.year }}</td>
           <td>{{ player.hometown }}</td>
         </tr>
         {% if player.bio %}
         <tr class="rt-bio-row">
-          <td colspan="6" class="rt-bio-td">
+          <td colspan="5" class="rt-bio-td">
             <div class="bio-panel" id="bio-{{ loop.index }}">
               <p class="rt-bio-meta">{{ player.position }}{% if player.year %} &middot; {{ player.year }}{% endif %}{% if player.hometown %} &middot; {{ player.hometown }}{% endif %}</p>
               <p>{{ player.bio }}</p>
