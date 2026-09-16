@@ -674,10 +674,34 @@ ul { list-style: none; }
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .result-win  { color: var(--win); }
 .result-loss { color: var(--loss); }
 .result-upcoming { color: var(--muted); font-style: italic; font-weight: 400; font-size: 0.82rem; }
+.sched-photos-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--red);
+  text-decoration: none;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  padding: 2px 7px;
+  border-radius: 4px;
+  width: fit-content;
+  transition: background 0.15s, color 0.15s;
+}
+.sched-photos-link:hover {
+  background: var(--red);
+  color: #fff;
+  text-decoration: none;
+  border-color: var(--red);
+}
 
 /* ── Recruit page ────────────────────────────────────────────────────────── */
 .recruit-hero {

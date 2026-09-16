@@ -87,6 +87,11 @@
         {% else %}
           <span class="result-upcoming">Upcoming</span>
         {% endif %}
+        {% if game.photos_url %}
+          <a href="{{ game.photos_url }}" target="_blank" rel="noopener noreferrer" class="sched-photos-link" title="View match photos">
+            📷 Photos
+          </a>
+        {% endif %}
       </div>
 
     </div>

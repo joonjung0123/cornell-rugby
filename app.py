@@ -315,12 +315,13 @@ def admin_schedule_add(team):
             if saved:
                 logo_path = saved
         entry = {
-            "date":     request.form.get("date", "").strip(),
-            "opponent": request.form.get("opponent", "").strip(),
-            "location": request.form.get("location", "Home"),
-            "venue":    request.form.get("venue", "").strip(),
-            "result":   request.form.get("result", "").strip(),
-            "logo":     logo_path,
+            "date":       request.form.get("date", "").strip(),
+            "opponent":   request.form.get("opponent", "").strip(),
+            "location":   request.form.get("location", "Home"),
+            "venue":      request.form.get("venue", "").strip(),
+            "result":     request.form.get("result", "").strip(),
+            "photos_url": request.form.get("photos_url", "").strip(),
+            "logo":       logo_path,
         }
         data = helpers.load_json(f"data/{team}/schedule.json")
         data.append(entry)
@@ -345,11 +346,12 @@ def admin_schedule_edit(team, idx):
             saved = save_upload(request.files["logo"], team, subfolder="logos")
             if saved:
                 game["logo"] = saved
-        game["date"]     = request.form.get("date", "").strip()
-        game["opponent"] = request.form.get("opponent", "").strip()
-        game["location"] = request.form.get("location", "Home")
-        game["venue"]    = request.form.get("venue", "").strip()
-        game["result"]   = request.form.get("result", "").strip()
+        game["date"]       = request.form.get("date", "").strip()
+        game["opponent"]   = request.form.get("opponent", "").strip()
+        game["location"]   = request.form.get("location", "Home")
+        game["venue"]      = request.form.get("venue", "").strip()
+        game["result"]     = request.form.get("result", "").strip()
+        game["photos_url"] = request.form.get("photos_url", "").strip()
         data.sort(key=lambda g: g["date"])
         helpers.save_json(f"data/{team}/schedule.json", data)
         flash("Game updated.", "success")

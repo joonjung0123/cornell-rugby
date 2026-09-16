@@ -45,6 +45,12 @@
   </div>
 
   <div class="form-group">
+    <label for="photos_url">Photos URL <span class="text-muted" style="font-weight:400;">(optional Google Drive / Album link)</span></label>
+    <input type="url" id="photos_url" name="photos_url"
+           value="{{ game.photos_url if game and game.photos_url else '' }}" placeholder="https://drive.google.com/..." />
+  </div>
+
+  <div class="form-group">
     <label for="logo">Opponent Logo</label>
 
     <div id="drop-zone"
