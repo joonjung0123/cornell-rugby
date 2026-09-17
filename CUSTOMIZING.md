@@ -18,6 +18,7 @@ This guide is written for **non-developers**. You do not need to know Python or 
 8. [Changing Colors or Fonts](#8-changing-colors-or-fonts)
 9. [Editing the Home Page Tagline and Descriptions](#9-editing-the-home-page-tagline-and-descriptions)
 10. [Editing Social Links in the Footer](#10-editing-social-links-in-the-footer)
+11. [Updating Google Form CSV Column Mappings](#11-updating-google-form-csv-column-mappings)
 
 ---
 
@@ -216,6 +217,108 @@ Colors use hex codes. You can find hex codes at [htmlcolorcodes.com](https://htm
 <!-- After -->
 <a href="https://instagram.com/cornellrugby" target="_blank" rel="noopener">@cornellrugby on Instagram</a>
 ```
+
+---
+
+## 11. Updating Google Form CSV Column Mappings
+
+When player or coach intake questions change on Google Forms, the column headers in the downloaded CSV will also change.
+
+The CSV import logic lives in **`app.py`** (around lines 378–450).
+
+### 1. Where the Mappings Live in `app.py`
+
+Open [`app.py`](app.py) and locate `_COL`:
+
+```python
+_COL = {
+    "name as it appears on the website": "name",
+    "for which team are you playing/coaching?": "_team",
+    "position": "position",
+    "graduation year": "year",
+    "hometown, state/province/country ...": "hometown",
+    "full bio (optional but encouraged)": "bio",
+    "height in feet and inch (example 5'5\" or 6'0\")": "height",
+    "weight in pounds (lbs) ...": "weight",
+    "major ...": "major",
+    "college or school enrolled": "college",
+    "social media - instagram (optional)": "instagram",
+}
+```
+
+### 2. How to Add or Update a Question / Header
+
+1. **Exact Header Matching:**
+   - Convert your new Google Form question title to **lowercase** with surrounding spaces removed.
+   - Add it as a key in `_COL` mapped to the internal field name (`name`, `_team`, `position`, `year`, `hometown`, `bio`, `height`, `weight`, `major`, `college`, etc.).
+
+2. **Fuzzy / Substring Matching:**
+   - If Google Form questions have long descriptions, instructions, or line breaks, update `_find_col()` right below `_COL`:
+   ```python
+   def _find_col(header: str) -> str | None:
+       h = header.strip().lower()
+       if h in _COL:
+           return _COL[h]
+       # Substring fallbacks
+       if h.startswith("hometown"):
+           return "hometown"
+       if "full bio" in h or "biography" in h:
+           return "bio"
+       if "weight" in h:
+           return "weight"
+       if "height" in h:
+           return "height"
+       if "major" in h or "field of study" in h:
+           return "major"
+       if "college" in h or "school enrolled" in h:
+           return "college"
+       return None
+   ```
+
+3. **Team Name Mapping (`_TEAM_MAP`):**
+   - If the team question options change (e.g. from "Men's Team" to "Cornell Men's Rugby"), add the new options in `_TEAM_MAP`:
+   ```python
+   _TEAM_MAP = {
+       "men's team": "men",
+       "men": "men",
+       "cornell men's rugby": "men",
+       "women's team": "women",
+       "women": "women",
+       "cornell women's rugby": "women",
+   }
+   ```
+
+### 3. Combining Fields into the Bio (`_build_bio`)
+
+If you add new custom fields (like high school, previous club, or pronouns) that should be formatted into the player's bio, update `_build_bio()` in [`app.py`](app.py):
+
+```python
+def _build_bio(row: dict, team: str = "men") -> str:
+    parts = []
+    # Collect parts to show in the meta subline (e.g., Height · Weight · Major)
+    h = row.get("height", "").strip()
+    w = row.get("weight", "").strip()
+    if h:
+        parts.append(h)
+    if team == "men" and w and w not in ("0", ""):
+        parts.append(f"{w} lbs")
+    major = row.get("major", "").strip()
+    college = row.get("college", "").strip()
+    if major:
+        parts.append(major)
+    if college:
+        parts.append(college)
+    
+    extra = row.get("bio", "").strip()
+    prefix = " · ".join(parts)
+    if prefix and extra:
+        return f"{prefix}\n{extra}"
+    return prefix or extra
+```
+
+### 4. Updating the Admin Reference Table
+
+After modifying code in `app.py`, update the visual reference table in [`templates/admin/upload_csv.html`](templates/admin/upload_csv.html) so admins uploading CSV files see the updated question names.
 
 ---
 
