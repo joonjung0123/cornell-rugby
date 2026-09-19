@@ -638,17 +638,16 @@
     function handleKeyPress(key) {
       if (isFinished || roundEnded || isSubmitting) return;
 
-      key = key.toUpperCase();
-      if (key === "ENTER") {
+      if (key === "Enter" || key === "ENTER") {
         submitGuess();
-      } else if (key === "BACKSPACE" || key === "DELETE") {
+      } else if (key === "Backspace" || key === "BACKSPACE" || key === "Delete" || key === "DELETE") {
         if (currentInput.length > 0) {
           currentInput = currentInput.slice(0, -1);
           updateMyGridDisplay();
         }
-      } else if (/^[A-Z]$/.test(key)) {
+      } else if (/^[a-zA-Z]$/.test(key)) {
         if (currentInput.length < 5) {
-          currentInput += key;
+          currentInput += key.toUpperCase();
           updateMyGridDisplay();
         }
       }
@@ -863,11 +862,15 @@
     // Event listeners for physical & virtual keyboards
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      handleKeyPress(e.key);
+      if (e.key === "Enter" || e.key === "Backspace" || /^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+        handleKeyPress(e.key);
+      }
     });
 
     document.querySelectorAll(".key").forEach(k => {
-      k.addEventListener("click", () => {
+      k.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         const keyVal = k.dataset.key;
         if (keyVal) {
           handleKeyPress(keyVal);

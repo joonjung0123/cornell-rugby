@@ -2,15 +2,16 @@ import json
 import os
 import random
 import time
-import threading
+import fcntl
 from typing import Dict, Any, List, Optional
 
-_LOCK = threading.Lock()
+# Paths
+_BASE_DIR = os.path.dirname(__file__)
+_WORDS_FILE = os.path.join(_BASE_DIR, "data", "wordle_words.json")
+_STATE_FILE = os.path.join(_BASE_DIR, "data", "games_state.json")
+_LOCK_FILE = os.path.join(_BASE_DIR, "data", "games_state.lock")
 
-# Path to word data
-_WORDS_FILE = os.path.join(os.path.dirname(__file__), "data", "wordle_words.json")
-
-# Fallback basic list if file is ever missing
+# Fallback words
 _DEFAULT_TARGETS = [
     "rugby", "scrum", "tryee", "pitch", "match", "tackl", "score", "field",
     "touch", "point", "coach", "world", "sport", "plant", "crane", "slate"
@@ -40,13 +41,13 @@ def evaluate_guess(guess: str, solution: str) -> List[str]:
     for ch in solution:
         sol_counts[ch] = sol_counts.get(ch, 0) + 1
 
-    # First pass: identify correct (green) matches
+    # Pass 1: exact matches
     for i in range(5):
         if guess[i] == solution[i]:
             res[i] = "correct"
             sol_counts[guess[i]] -= 1
 
-    # Second pass: identify present (yellow) matches
+    # Pass 2: present elsewhere
     for i in range(5):
         if res[i] != "correct" and sol_counts.get(guess[i], 0) > 0:
             res[i] = "present"
@@ -55,132 +56,166 @@ def evaluate_guess(guess: str, solution: str) -> List[str]:
     return res
 
 
-class HeadToHeadWordleSession:
-    def __init__(self):
-        self.players: Dict[str, Dict[str, Any]] = {}  # session_id -> {name, slot: 1|2, last_active}
-        self.scores: Dict[str, int] = {"player1": 0, "player2": 0}  # slot key -> score
-        self.round_num = 1
-        self.target_word = self._pick_word()
-        self.round_start_time = time.time()
-        self.round_ended = False
-        self.round_winner_slot: Optional[str] = None  # "player1", "player2", or "tie"
-        self.round_reason = ""
-        self.next_round_ready: Dict[str, bool] = {"player1": False, "player2": False}
-        
-        # Player game state for the current round
-        # slot: {guesses: [str], feedbacks: [[str]], finished: bool, won: bool, finish_time: float, attempts: int}
-        self.round_player_state: Dict[str, Dict[str, Any]] = {
-            "player1": self._init_player_round_state(),
-            "player2": self._init_player_round_state()
-        }
+def _pick_word() -> str:
+    return random.choice(TARGET_WORDS).upper()
 
-    def _pick_word(self) -> str:
-        return random.choice(TARGET_WORDS).upper()
 
-    def _init_player_round_state(self) -> Dict[str, Any]:
-        return {
-            "guesses": [],
-            "feedbacks": [],
-            "finished": False,
-            "won": False,
-            "finish_time": None,
-            "attempts": 0,
+def _initial_round_player_state() -> Dict[str, Any]:
+    return {
+        "guesses": [],
+        "feedbacks": [],
+        "finished": False,
+        "won": False,
+        "finish_time": None,
+        "attempts": 0,
+    }
+
+
+def _initial_state() -> Dict[str, Any]:
+    return {
+        "players": {},  # session_id -> {name, slot, last_active}
+        "scores": {"player1": 0, "player2": 0},
+        "round_num": 1,
+        "target_word": _pick_word(),
+        "round_start_time": time.time(),
+        "round_ended": False,
+        "round_winner_slot": None,
+        "round_reason": "",
+        "next_round_ready": {"player1": False, "player2": False},
+        "round_player_state": {
+            "player1": _initial_round_player_state(),
+            "player2": _initial_round_player_state()
         }
+    }
+
+
+class PersistentWordleSession:
+    """
+    File-backed cross-process Wordle state manager with inter-process file locking.
+    Guarantees both players (across multiple Gunicorn worker processes or single Flask server)
+    share the EXACT same target word, scores, and round state.
+    """
+
+    def _with_state(self, func):
+        os.makedirs(os.path.dirname(_STATE_FILE), exist_ok=True)
+        with open(_LOCK_FILE, "a+") as lock_file:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            try:
+                state = None
+                if os.path.exists(_STATE_FILE):
+                    try:
+                        with open(_STATE_FILE, "r") as f:
+                            state = json.load(f)
+                    except Exception:
+                        state = None
+
+                if not state or not isinstance(state, dict) or "target_word" not in state:
+                    state = _initial_state()
+                    self._save_raw(state)
+
+                result, save_needed = func(state)
+                if save_needed:
+                    self._save_raw(state)
+                return result
+            finally:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+    def _save_raw(self, state: Dict[str, Any]):
+        tmp_file = f"{_STATE_FILE}.tmp.{os.getpid()}"
+        with open(tmp_file, "w") as f:
+            json.dump(state, f)
+        os.replace(tmp_file, _STATE_FILE)
 
     def register_player(self, session_id: str, player_name: str) -> Dict[str, Any]:
-        with _LOCK:
+        def _op(state):
             now = time.time()
             clean_name = player_name.strip()[:20] or "Anonymous"
+            players = state.setdefault("players", {})
 
-            # If session_id already registered, update name and activity
-            if session_id in self.players:
-                self.players[session_id]["name"] = clean_name
-                self.players[session_id]["last_active"] = now
-                return {"slot": self.players[session_id]["slot"], "name": clean_name}
+            if session_id in players:
+                players[session_id]["name"] = clean_name
+                players[session_id]["last_active"] = now
+                return ({"slot": players[session_id]["slot"], "name": clean_name}, True)
 
-            # Check if player1 or player2 slot is taken
-            p1_entry = next((item for item in self.players.values() if item["slot"] == "player1"), None)
-            p2_entry = next((item for item in self.players.values() if item["slot"] == "player2"), None)
+            p1_entry = next((item for item in players.values() if item["slot"] == "player1"), None)
+            p2_entry = next((item for item in players.values() if item["slot"] == "player2"), None)
 
             if p1_entry is None:
                 assigned_slot = "player1"
             elif p2_entry is None:
                 assigned_slot = "player2"
             else:
-                # Both slots exist: replace the one that was least recently active
-                if p1_entry["last_active"] <= p2_entry["last_active"]:
+                # Replace the least recently active player slot
+                if p1_entry.get("last_active", 0) <= p2_entry.get("last_active", 0):
                     assigned_slot = "player1"
-                    self.players = {k: v for k, v in self.players.items() if v["slot"] != "player1"}
+                    players = {k: v for k, v in players.items() if v["slot"] != "player1"}
                 else:
                     assigned_slot = "player2"
-                    self.players = {k: v for k, v in self.players.items() if v["slot"] != "player2"}
+                    players = {k: v for k, v in players.items() if v["slot"] != "player2"}
 
-            self.players[session_id] = {
+            players[session_id] = {
                 "name": clean_name,
                 "slot": assigned_slot,
                 "last_active": now
             }
-            return {"slot": assigned_slot, "name": clean_name}
+            state["players"] = players
+            return ({"slot": assigned_slot, "name": clean_name}, True)
+
+        return self._with_state(_op)
 
     def unregister_player(self, session_id: str):
-        with _LOCK:
-            if session_id in self.players:
-                del self.players[session_id]
-            # When no players remain connected, wipe session and reset everything cleanly
-            if len(self.players) == 0:
-                self._reset_match_internal()
+        def _op(state):
+            players = state.get("players", {})
+            if session_id in players:
+                del players[session_id]
+            state["players"] = players
+            if len(players) == 0:
+                # Reset all game state when everyone leaves
+                fresh = _initial_state()
+                state.clear()
+                state.update(fresh)
+            return (True, True)
 
-    def _reset_match_internal(self):
-        """Reset all game scores, progress, and rounds (must be called with _LOCK held)."""
-        self.scores = {"player1": 0, "player2": 0}
-        self.round_num = 1
-        self.target_word = self._pick_word()
-        self.round_start_time = time.time()
-        self.round_ended = False
-        self.round_winner_slot = None
-        self.round_reason = ""
-        self.next_round_ready = {"player1": False, "player2": False}
-        self.round_player_state = {
-            "player1": self._init_player_round_state(),
-            "player2": self._init_player_round_state()
-        }
-
-    def get_player_by_session(self, session_id: str) -> Optional[Dict[str, Any]]:
-        with _LOCK:
-            return self.players.get(session_id)
+        return self._with_state(_op)
 
     def ping(self, session_id: str):
-        with _LOCK:
-            if session_id in self.players:
-                self.players[session_id]["last_active"] = time.time()
+        def _op(state):
+            players = state.get("players", {})
+            if session_id in players:
+                players[session_id]["last_active"] = time.time()
+                return (True, True)
+            return (False, False)
+
+        return self._with_state(_op)
 
     def submit_guess(self, session_id: str, guess: str) -> Dict[str, Any]:
-        with _LOCK:
-            player = self.players.get(session_id)
+        def _op(state):
+            players = state.get("players", {})
+            player = players.get(session_id)
             if not player:
-                return {"success": False, "error": "Player not registered"}
-            
+                return ({"success": False, "error": "Player not registered"}, False)
+
             slot = player["slot"]
-            pstate = self.round_player_state[slot]
+            pstate = state["round_player_state"].setdefault(slot, _initial_round_player_state())
 
-            if self.round_ended or pstate["finished"]:
-                return {"success": False, "error": "Round is already finished for you"}
+            if state.get("round_ended", False) or pstate.get("finished", False):
+                return ({"success": False, "error": "Round is already finished for you"}, False)
 
-            guess = guess.strip().upper()
-            if len(guess) != 5:
-                return {"success": False, "error": "Word must be 5 letters"}
+            guess_clean = guess.strip().upper()
+            if len(guess_clean) != 5:
+                return ({"success": False, "error": "Word must be 5 letters"}, False)
 
-            guess_lower = guess.lower()
+            guess_lower = guess_clean.lower()
             if guess_lower not in VALID_WORDS and guess_lower not in TARGET_WORDS:
-                return {"success": False, "error": "Not in word list"}
+                return ({"success": False, "error": "Not in word list"}, False)
 
-            feed = evaluate_guess(guess, self.target_word)
-            pstate["guesses"].append(guess)
+            target = state["target_word"]
+            feed = evaluate_guess(guess_clean, target)
+            pstate["guesses"].append(guess_clean)
             pstate["feedbacks"].append(feed)
-            pstate["attempts"] += 1
+            pstate["attempts"] = len(pstate["guesses"])
 
-            # Check if solved or reached max attempts
-            if guess == self.target_word:
+            if guess_clean == target:
                 pstate["finished"] = True
                 pstate["won"] = True
                 pstate["finish_time"] = time.time()
@@ -189,185 +224,178 @@ class HeadToHeadWordleSession:
                 pstate["won"] = False
                 pstate["finish_time"] = time.time()
 
-            # Check if round should end now
-            self._evaluate_round_completion()
+            # Check if round should end now (both players finished)
+            p1_state = state["round_player_state"]["player1"]
+            p2_state = state["round_player_state"]["player2"]
 
-            return {
+            if p1_state.get("finished") and p2_state.get("finished") and not state.get("round_ended", False):
+                state["round_ended"] = True
+                p1_name = "Player 1"
+                p2_name = "Player 2"
+                for p in players.values():
+                    if p["slot"] == "player1":
+                        p1_name = p["name"]
+                    elif p["slot"] == "player2":
+                        p2_name = p["name"]
+
+                if p1_state.get("won") and p2_state.get("won"):
+                    if p1_state["attempts"] < p2_state["attempts"]:
+                        state["round_winner_slot"] = "player1"
+                        state["scores"]["player1"] += 1
+                        state["round_reason"] = f"{p1_name} solved in fewer attempts ({p1_state['attempts']} vs {p2_state['attempts']})!"
+                    elif p2_state["attempts"] < p1_state["attempts"]:
+                        state["round_winner_slot"] = "player2"
+                        state["scores"]["player2"] += 1
+                        state["round_reason"] = f"{p2_name} solved in fewer attempts ({p2_state['attempts']} vs {p1_state['attempts']})!"
+                    else:
+                        p1_dur = p1_state["finish_time"] - state["round_start_time"]
+                        p2_dur = p2_state["finish_time"] - state["round_start_time"]
+                        if p1_dur < p2_dur:
+                            state["round_winner_slot"] = "player1"
+                            state["scores"]["player1"] += 1
+                            state["round_reason"] = f"{p1_name} solved faster ({p1_dur:.1f}s vs {p2_dur:.1f}s)!"
+                        elif p2_dur < p1_dur:
+                            state["round_winner_slot"] = "player2"
+                            state["scores"]["player2"] += 1
+                            state["round_reason"] = f"{p2_name} solved faster ({p2_dur:.1f}s vs {p1_dur:.1f}s)!"
+                        else:
+                            state["round_winner_slot"] = "tie"
+                            state["round_reason"] = "It's an exact tie in attempts and time!"
+                elif p1_state.get("won") and not p2_state.get("won"):
+                    state["round_winner_slot"] = "player1"
+                    state["scores"]["player1"] += 1
+                    state["round_reason"] = f"{p1_name} solved the word!"
+                elif p2_state.get("won") and not p1_state.get("won"):
+                    state["round_winner_slot"] = "player2"
+                    state["scores"]["player2"] += 1
+                    state["round_reason"] = f"{p2_name} solved the word!"
+                else:
+                    state["round_winner_slot"] = "tie"
+                    state["round_reason"] = "Neither player solved the word. 0 points awarded."
+
+            return ({
                 "success": True,
-                "guess": guess,
+                "guess": guess_clean,
                 "feedback": feed,
                 "finished": pstate["finished"],
                 "won": pstate["won"]
-            }
+            }, True)
 
-    def _evaluate_round_completion(self):
-        """Called with lock held."""
-        p1_state = self.round_player_state["player1"]
-        p2_state = self.round_player_state["player2"]
-
-        # Only evaluate if both players have finished their board
-        if p1_state["finished"] and p2_state["finished"] and not self.round_ended:
-            self.round_ended = True
-            
-            # Outcome logic according to user requirements:
-            # 1. If both get it, the one who got it in fewer attempts wins.
-            # 2. If both get it in the same number of attempts, the one who finished quicker wins.
-            # 3. If only one gets it, that one wins.
-            # 4. If neither gets it, 0 points for both (tie).
-            p1_name = self._get_slot_name("player1")
-            p2_name = self._get_slot_name("player2")
-
-            if p1_state["won"] and p2_state["won"]:
-                if p1_state["attempts"] < p2_state["attempts"]:
-                    self.round_winner_slot = "player1"
-                    self.scores["player1"] += 1
-                    self.round_reason = f"{p1_name} solved in fewer attempts ({p1_state['attempts']} vs {p2_state['attempts']})!"
-                elif p2_state["attempts"] < p1_state["attempts"]:
-                    self.round_winner_slot = "player2"
-                    self.scores["player2"] += 1
-                    self.round_reason = f"{p2_name} solved in fewer attempts ({p2_state['attempts']} vs {p1_state['attempts']})!"
-                else:
-                    # Same attempts, tiebreaker is time taken
-                    p1_duration = p1_state["finish_time"] - self.round_start_time
-                    p2_duration = p2_state["finish_time"] - self.round_start_time
-                    if p1_duration < p2_duration:
-                        self.round_winner_slot = "player1"
-                        self.scores["player1"] += 1
-                        self.round_reason = f"{p1_name} solved faster ({p1_duration:.1f}s vs {p2_duration:.1f}s)!"
-                    elif p2_duration < p1_duration:
-                        self.round_winner_slot = "player2"
-                        self.scores["player2"] += 1
-                        self.round_reason = f"{p2_name} solved faster ({p2_duration:.1f}s vs {p1_duration:.1f}s)!"
-                    else:
-                        self.round_winner_slot = "tie"
-                        self.round_reason = "It's an exact tie in attempts and time!"
-            elif p1_state["won"] and not p2_state["won"]:
-                self.round_winner_slot = "player1"
-                self.scores["player1"] += 1
-                self.round_reason = f"{p1_name} solved the word!"
-            elif p2_state["won"] and not p1_state["won"]:
-                self.round_winner_slot = "player2"
-                self.scores["player2"] += 1
-                self.round_reason = f"{p2_name} solved the word!"
-            else:
-                self.round_winner_slot = "tie"
-                self.round_reason = "Neither player solved the word. 0 points awarded."
-
-    def _get_slot_name(self, slot: str) -> str:
-        for p in self.players.values():
-            if p["slot"] == slot:
-                return p["name"]
-        return "Player 1" if slot == "player1" else "Player 2"
+        return self._with_state(_op)
 
     def request_next_round(self, session_id: str) -> Dict[str, Any]:
-        with _LOCK:
-            player = self.players.get(session_id)
+        def _op(state):
+            players = state.get("players", {})
+            player = players.get(session_id)
             if not player:
-                return {"success": False, "error": "Player not registered"}
-            
+                return ({"success": False, "error": "Player not registered"}, False)
+
             slot = player["slot"]
-            self.next_round_ready[slot] = True
+            state["next_round_ready"][slot] = True
 
-            # If both players are ready (or if only 1 player is connected), start next round
             other_slot = "player2" if slot == "player1" else "player1"
-            other_connected = any(p["slot"] == other_slot and (time.time() - p["last_active"] < 60) for p in self.players.values())
+            now = time.time()
+            other_connected = any(p["slot"] == other_slot and (now - p.get("last_active", 0) < 60) for p in players.values())
 
-            if (self.next_round_ready["player1"] and self.next_round_ready["player2"]) or not other_connected:
-                self._start_new_round()
+            if (state["next_round_ready"]["player1"] and state["next_round_ready"]["player2"]) or not other_connected:
+                state["round_num"] += 1
+                state["target_word"] = _pick_word()
+                state["round_start_time"] = time.time()
+                state["round_ended"] = False
+                state["round_winner_slot"] = None
+                state["round_reason"] = ""
+                state["next_round_ready"] = {"player1": False, "player2": False}
+                state["round_player_state"] = {
+                    "player1": _initial_round_player_state(),
+                    "player2": _initial_round_player_state()
+                }
 
-            return {"success": True}
+            return ({"success": True}, True)
 
-    def _start_new_round(self):
-        """Called with lock held."""
-        self.round_num += 1
-        self.target_word = self._pick_word()
-        self.round_start_time = time.time()
-        self.round_ended = False
-        self.round_winner_slot = None
-        self.round_reason = ""
-        self.next_round_ready = {"player1": False, "player2": False}
-        self.round_player_state = {
-            "player1": self._init_player_round_state(),
-            "player2": self._init_player_round_state()
-        }
+        return self._with_state(_op)
 
     def reset_match(self):
-        with _LOCK:
-            self._reset_match_internal()
+        def _op(state):
+            players = state.get("players", {})
+            fresh = _initial_state()
+            fresh["players"] = players
+            state.clear()
+            state.update(fresh)
+            return (True, True)
+
+        return self._with_state(_op)
 
     def get_state_for_player(self, session_id: str) -> Dict[str, Any]:
-        with _LOCK:
+        def _op(state):
             now = time.time()
-            player = self.players.get(session_id)
+            players = state.get("players", {})
+            player = players.get(session_id)
             if not player:
-                return {"registered": False}
+                return ({"registered": False}, False)
 
             player_slot = player["slot"]
             opponent_slot = "player2" if player_slot == "player1" else "player1"
 
-            # Find opponent name and online status
             opponent_name = None
             opponent_online = False
-            for p in self.players.values():
+            for p in players.values():
                 if p["slot"] == opponent_slot:
                     opponent_name = p["name"]
-                    opponent_online = (now - p["last_active"] < 15)
+                    opponent_online = (now - p.get("last_active", 0) < 15)
 
-            p_state = self.round_player_state[player_slot]
-            opp_state = self.round_player_state[opponent_slot]
+            p_state = state["round_player_state"].get(player_slot, _initial_round_player_state())
+            opp_state = state["round_player_state"].get(opponent_slot, _initial_round_player_state())
 
-            # In accordance with requirement #4:
-            # "No, they should NOT be able to see each other's live progress, only find out after each round"
-            # We only send opponent guesses and final target word if round_ended is True.
             opponent_data = {
                 "name": opponent_name or ("Player 2" if player_slot == "player1" else "Player 1"),
                 "online": opponent_online,
-                "ready_next": self.next_round_ready.get(opponent_slot, False),
+                "ready_next": state["next_round_ready"].get(opponent_slot, False),
             }
 
-            if self.round_ended:
-                opponent_data["guesses"] = opp_state["guesses"]
-                opponent_data["feedbacks"] = opp_state["feedbacks"]
-                opponent_data["won"] = opp_state["won"]
-                opponent_data["attempts"] = opp_state["attempts"]
-                if opp_state["finish_time"]:
-                    opponent_data["duration"] = round(opp_state["finish_time"] - self.round_start_time, 1)
+            if state.get("round_ended", False):
+                opponent_data["guesses"] = opp_state.get("guesses", [])
+                opponent_data["feedbacks"] = opp_state.get("feedbacks", [])
+                opponent_data["won"] = opp_state.get("won", False)
+                opponent_data["attempts"] = opp_state.get("attempts", 0)
+                if opp_state.get("finish_time"):
+                    opponent_data["duration"] = round(opp_state["finish_time"] - state["round_start_time"], 1)
                 else:
                     opponent_data["duration"] = None
 
             my_data = {
                 "name": player["name"],
                 "slot": player_slot,
-                "guesses": p_state["guesses"],
-                "feedbacks": p_state["feedbacks"],
-                "finished": p_state["finished"],
-                "won": p_state["won"],
-                "attempts": p_state["attempts"],
-                "ready_next": self.next_round_ready.get(player_slot, False),
+                "guesses": p_state.get("guesses", []),
+                "feedbacks": p_state.get("feedbacks", []),
+                "finished": p_state.get("finished", False),
+                "won": p_state.get("won", False),
+                "attempts": p_state.get("attempts", 0),
+                "ready_next": state["next_round_ready"].get(player_slot, False),
             }
-            if p_state["finish_time"]:
-                my_data["duration"] = round(p_state["finish_time"] - self.round_start_time, 1)
+            if p_state.get("finish_time"):
+                my_data["duration"] = round(p_state["finish_time"] - state["round_start_time"], 1)
             else:
                 my_data["duration"] = None
 
-            # Only expose solution word when round is ended or when player has completed 6 attempts/solved
-            solution_revealed = self.target_word if (self.round_ended or p_state["finished"]) else None
+            solution_revealed = state["target_word"] if (state.get("round_ended") or p_state.get("finished")) else None
 
-            return {
+            payload = {
                 "registered": True,
-                "round_num": self.round_num,
+                "round_num": state.get("round_num", 1),
                 "scores": {
-                    "player1": self.scores["player1"],
-                    "player2": self.scores["player2"],
+                    "player1": state.get("scores", {}).get("player1", 0),
+                    "player2": state.get("scores", {}).get("player2", 0),
                 },
                 "me": my_data,
                 "opponent": opponent_data,
-                "round_ended": self.round_ended,
-                "round_winner_slot": self.round_winner_slot,
-                "round_reason": self.round_reason,
+                "round_ended": state.get("round_ended", False),
+                "round_winner_slot": state.get("round_winner_slot"),
+                "round_reason": state.get("round_reason", ""),
                 "target_word": solution_revealed,
             }
+            return (payload, False)
+
+        return self._with_state(_op)
 
 
-# Global game session singleton
-GAME_SESSION = HeadToHeadWordleSession()
+GAME_SESSION = PersistentWordleSession()
