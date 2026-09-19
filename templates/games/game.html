@@ -763,7 +763,8 @@
           return;
         }
         const data = await res.json();
-        if (!data.registered) {
+        if (!data || data.registered === false) {
+          // If session expired or slot re-assigned, redirect to login
           window.location.href = "{{ url_for('games_login') }}";
           return;
         }

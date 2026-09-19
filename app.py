@@ -585,6 +585,9 @@ def games_page():
 
 @app.route("/games/login", methods=["GET", "POST"])
 def games_login():
+    if request.method == "GET" and _games_logged_in():
+        return redirect(url_for("games_page"))
+
     if request.method == "POST":
         pwd = request.form.get("password", "")
         name = request.form.get("player_name", "").strip()
@@ -596,6 +599,7 @@ def games_login():
                 session["games_session_id"] = uuid.uuid4().hex
             session["games_logged_in"] = True
             session["games_player_name"] = name
+            session.permanent = True
             GAME_SESSION.register_player(session["games_session_id"], name)
             return redirect(url_for("games_page"))
         else:

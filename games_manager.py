@@ -98,21 +98,22 @@ class HeadToHeadWordleSession:
                 self.players[session_id]["last_active"] = now
                 return {"slot": self.players[session_id]["slot"], "name": clean_name}
 
-            # Find free slot or slot that is inactive (> 120s)
-            p1_active = any(p["slot"] == "player1" and (now - p["last_active"] < 120) for p in self.players.values())
-            p2_active = any(p["slot"] == "player2" and (now - p["last_active"] < 120) for p in self.players.values())
+            # Check if player1 or player2 slot is taken
+            p1_entry = next((item for item in self.players.values() if item["slot"] == "player1"), None)
+            p2_entry = next((item for item in self.players.values() if item["slot"] == "player2"), None)
 
-            if not p1_active:
+            if p1_entry is None:
                 assigned_slot = "player1"
-                # Evict old player1 mappings
-                self.players = {k: v for k, v in self.players.items() if v["slot"] != "player1"}
-            elif not p2_active:
+            elif p2_entry is None:
                 assigned_slot = "player2"
-                # Evict old player2 mappings
-                self.players = {k: v for k, v in self.players.items() if v["slot"] != "player2"}
             else:
-                # Both slots currently active; check if any slot has an older inactive entry
-                assigned_slot = "player1" # fallback replacement
+                # Both slots exist: replace the one that was least recently active
+                if p1_entry["last_active"] <= p2_entry["last_active"]:
+                    assigned_slot = "player1"
+                    self.players = {k: v for k, v in self.players.items() if v["slot"] != "player1"}
+                else:
+                    assigned_slot = "player2"
+                    self.players = {k: v for k, v in self.players.items() if v["slot"] != "player2"}
 
             self.players[session_id] = {
                 "name": clean_name,
