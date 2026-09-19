@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games Lounge — Cornell Rugby</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <style>
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .login-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-top: 4px solid #B31B1B;
+      border-radius: 8px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .login-box h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .login-box p {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #B31B1B;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .login-box label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+      color: #c9d1d9;
+    }
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #30363d;
+      background: #0d1117;
+      color: #fff;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .login-box input:focus {
+      outline: none;
+      border-color: #B31B1B;
+      box-shadow: 0 0 0 2px rgba(179, 27, 27, 0.4);
+    }
+    .flash-danger, .flash-error {
+      background: rgba(248, 81, 73, 0.15);
+      border: 1px solid #f85149;
+      color: #ff7b72;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      margin-bottom: 1.25rem;
+    }
+    .btn-games {
+      width: 100%;
+      background: #B31B1B;
+      color: #ffffff;
+      border: none;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-games:hover {
+      background: #d32f2f;
+    }
+    .wordle-mini-tiles {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 1.5rem;
+    }
+    .tile {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: 4px;
+    }
+    .tile.g { background: #538d4e; border-color: #538d4e; color: #fff; }
+    .tile.y { background: #b59f3b; border-color: #b59f3b; color: #fff; }
+    .tile.c { background: #B31B1B; border-color: #B31B1B; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="wordle-mini-tiles">
+      <div class="tile g">R</div>
+      <div class="tile y">U</div>
+      <div class="tile c">G</div>
+      <div class="tile g">B</div>
+      <div class="tile y">Y</div>
+    </div>
+    
+    <h1>
+      Wordle 1v1
+      <span class="badge">Easter Egg</span>
+    </h1>
+    <p>Secret 2-Player Head-to-Head Arena</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label for="player_name">Your Name / Nickname</label>
+        <input type="text" id="player_name" name="player_name" placeholder="e.g. Bear, Captain" required autofocus maxlength="20" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Easter Egg Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password" />
+      </div>
+
+      <button type="submit" class="btn-games">Enter Game</button>
+    </form>
+  </div>
+</body>
+</html>

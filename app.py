@@ -6,11 +6,12 @@ import uuid
 from datetime import datetime
 from flask import (
     Flask, render_template, abort,
-    redirect, url_for, request, flash, session
+    redirect, url_for, request, flash, session, jsonify
 )
 from werkzeug.utils import secure_filename
 
 import helpers
+from games_manager import GAME_SESSION
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me-in-production")
@@ -31,6 +32,22 @@ def _require_admin():
     """Return a redirect to the login page if not authenticated, else None."""
     if not _admin_logged_in():
         return redirect(url_for("admin_login", next=request.path))
+    return None
+
+
+# ── Games password helper ──────────────────────────────────────────────────────
+
+def _games_password() -> str:
+    """Return the games easteregg password from the environment, with a safe fallback."""
+    return os.environ.get("GAMES_PASSWORD", "cornellwordle")
+
+def _games_logged_in() -> bool:
+    return session.get("games_logged_in") is True and bool(session.get("games_session_id"))
+
+def _require_games():
+    """Return a redirect to games login if not authenticated."""
+    if not _games_logged_in():
+        return redirect(url_for("games_login"))
     return None
 
 # Make Python's enumerate available in Jinja2 templates
@@ -551,6 +568,89 @@ def admin_upload_csv():
         return redirect(url_for("admin_upload_csv"))
 
     return render_template("admin/upload_csv.html")
+
+
+# ── Hidden Easter Egg: Wordle Head-to-Head Game ────────────────────────────────
+
+@app.route("/games", methods=["GET"])
+def games_page():
+    if (r := _require_games()):
+        return r
+    player_id = session.get("games_session_id")
+    player_name = session.get("games_player_name", "Player")
+    # Ensure registered in game session
+    reg_info = GAME_SESSION.register_player(player_id, player_name)
+    return render_template("games/game.html", player_name=player_name, slot=reg_info["slot"])
+
+
+@app.route("/games/login", methods=["GET", "POST"])
+def games_login():
+    if request.method == "POST":
+        pwd = request.form.get("password", "")
+        name = request.form.get("player_name", "").strip()
+        if not name:
+            name = "Player"
+
+        if pwd == _games_password():
+            if "games_session_id" not in session:
+                session["games_session_id"] = uuid.uuid4().hex
+            session["games_logged_in"] = True
+            session["games_player_name"] = name
+            GAME_SESSION.register_player(session["games_session_id"], name)
+            return redirect(url_for("games_page"))
+        else:
+            flash("Invalid password. Please try again.", "danger")
+
+    return render_template("games/login.html")
+
+
+@app.route("/games/logout")
+def games_logout():
+    player_id = session.get("games_session_id")
+    if player_id:
+        GAME_SESSION.unregister_player(player_id)
+    session.pop("games_logged_in", None)
+    session.pop("games_session_id", None)
+    session.pop("games_player_name", None)
+    return redirect(url_for("games_login"))
+
+
+@app.route("/api/games/state", methods=["GET"])
+def api_games_state():
+    if not _games_logged_in():
+        return jsonify({"error": "Unauthorized"}), 401
+    player_id = session.get("games_session_id")
+    GAME_SESSION.ping(player_id)
+    state = GAME_SESSION.get_state_for_player(player_id)
+    return jsonify(state)
+
+
+@app.route("/api/games/guess", methods=["POST"])
+def api_games_guess():
+    if not _games_logged_in():
+        return jsonify({"error": "Unauthorized"}), 401
+    player_id = session.get("games_session_id")
+    data = request.get_json(silent=True) or {}
+    guess = data.get("guess", "")
+    result = GAME_SESSION.submit_guess(player_id, guess)
+    return jsonify(result)
+
+
+@app.route("/api/games/next-round", methods=["POST"])
+def api_games_next_round():
+    if not _games_logged_in():
+        return jsonify({"error": "Unauthorized"}), 401
+    player_id = session.get("games_session_id")
+    result = GAME_SESSION.request_next_round(player_id)
+    return jsonify(result)
+
+
+@app.route("/api/games/reset", methods=["POST"])
+def api_games_reset():
+    if not _games_logged_in():
+        return jsonify({"error": "Unauthorized"}), 401
+    GAME_SESSION.reset_match()
+    return jsonify({"success": True})
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

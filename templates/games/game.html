@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wordle 1v1 Arena — Cornell Rugby</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <style>
+    :root {
+      --color-correct: #538d4e;
+      --color-present: #b59f3b;
+      --color-absent: #3a3a3c;
+      --color-border: #3a3a3c;
+      --color-key-bg: #818384;
+      --bg-main: #121213;
+      --bg-panel: #1e1e1f;
+      --text-main: #ffffff;
+      --text-muted: #a0a0a5;
+      --accent-red: #B31B1B;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    .game-header {
+      width: 100%;
+      max-width: 900px;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #2f2f32;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .game-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .game-title span.badge {
+      background: var(--accent-red);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      letter-spacing: 0;
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn-header {
+      background: #272729;
+      color: var(--text-muted);
+      border: 1px solid #3a3a3c;
+      padding: 0.35rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-header:hover {
+      color: #fff;
+      border-color: #555;
+    }
+
+    /* ── Scoreboard ── */
+    .scoreboard-wrap {
+      width: 100%;
+      max-width: 600px;
+      margin: 0.75rem auto;
+      padding: 0 1rem;
+    }
+    .scoreboard {
+      background: var(--bg-panel);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid #2c2c2e;
+    }
+    .player-card {
+      text-align: center;
+      flex: 1;
+    }
+    .player-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      color: #fff;
+    }
+    .player-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #888;
+      display: inline-block;
+    }
+    .player-status-dot.online {
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+    }
+    .player-score {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-top: 0.2rem;
+    }
+    .vs-divider {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      text-align: center;
+    }
+    .round-indicator {
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Main Layout ── */
+    .main-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0.5rem 1rem;
+      flex: 1;
+    }
+
+    /* ── Toast Notifications ── */
+    .toast-container {
+      position: fixed;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .toast {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      padding: 0.6rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    /* ── Boards Container ── */
+    .boards-wrapper {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0.5rem 0;
+      width: 100%;
+    }
+
+    .board-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .board-section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Wordle Grid */
+    .grid {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      grid-gap: 5px;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+    .grid-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 5px;
+    }
+    .cell {
+      width: 52px;
+      height: 52px;
+      border: 2px solid var(--color-border);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.7rem;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-sizing: border-box;
+      transition: transform 0.1s;
+    }
+    .cell.pop {
+      transform: scale(1.1);
+      border-color: #565758;
+    }
+    .cell.correct {
+      background-color: var(--color-correct) !important;
+      border-color: var(--color-correct) !important;
+      color: #fff;
+    }
+    .cell.present {
+      background-color: var(--color-present) !important;
+      border-color: var(--color-present) !important;
+      color: #fff;
+    }
+    .cell.absent {
+      background-color: var(--color-absent) !important;
+      border-color: var(--color-absent) !important;
+      color: #fff;
+    }
+
+    /* Opponent Board Mini / Revealed */
+    .opponent-board-wrapper {
+      display: none;
+    }
+    .opponent-board-wrapper.show {
+      display: flex;
+    }
+    .opponent-grid .cell {
+      width: 44px;
+      height: 44px;
+      font-size: 1.4rem;
+    }
+
+    /* Status Banner / Waiting Area */
+    .status-banner {
+      width: 100%;
+      max-width: 500px;
+      background: var(--bg-panel);
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0 1rem;
+      text-align: center;
+      display: none;
+    }
+    .status-banner.show {
+      display: block;
+    }
+    .banner-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+    .banner-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .btn-next-round {
+      background: #238636;
+      color: #ffffff;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-next-round:hover {
+      background: #2ea043;
+    }
+    .btn-next-round:disabled {
+      background: #333;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    /* ── Virtual Keyboard ── */
+    .keyboard {
+      width: 100%;
+      max-width: 500px;
+      margin: auto 0 0;
+      padding: 0 0.25rem;
+    }
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      touch-action: manipulation;
+      margin-bottom: 6px;
+      gap: 5px;
+    }
+    .key {
+      font-family: inherit;
+      font-weight: 700;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      height: 52px;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      background-color: var(--color-key-bg);
+      color: #ffffff;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    .key.wide {
+      flex: 1.5;
+      font-size: 0.75rem;
+    }
+    .key.correct {
+      background-color: var(--color-correct);
+    }
+    .key.present {
+      background-color: var(--color-present);
+    }
+    .key.absent {
+      background-color: var(--color-absent);
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      .boards-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      .cell {
+        width: 44px;
+        height: 44px;
+        font-size: 1.4rem;
+      }
+      .opponent-grid .cell {
+        width: 38px;
+        height: 38px;
+        font-size: 1.2rem;
+      }
+      .key {
+        height: 48px;
+        font-size: 0.85rem;
+      }
+      .key.wide {
+        font-size: 0.7rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+    .shake {
+      animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast overlay -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Game Header -->
+  <header class="game-header">
+    <div class="game-title">
+      WORDLE 1v1
+      <span class="badge">Easter Egg</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="resetMatch()">Reset Scores</button>
+      <a href="{{ url_for('games_logout') }}" class="btn-header">Exit Game</a>
+    </div>
+  </header>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard-wrap">
+    <div class="scoreboard">
+      <div class="player-card">
+        <div class="player-name">
+          <span class="player-status-dot online"></span>
+          <span id="myDisplayName">{{ player_name }} (You)</span>
+        </div>
+        <div class="player-score" id="myScore">0</div>
+      </div>
+
+      <div class="vs-divider">
+        <div class="round-indicator" id="roundIndicator">Round 1</div>
+        <span style="font-size:1.1rem;">VS</span>
+      </div>
+
+      <div class="player-card">
+        <div class="player-name">
+          <span class="player-status-dot" id="oppStatusDot"></span>
+          <span id="oppDisplayName">Waiting...</span>
+        </div>
+        <div class="player-score" id="oppScore">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Container -->
+  <main class="main-container">
+
+    <!-- Status Banner for Round End / Waiting for opponent -->
+    <div class="status-banner" id="statusBanner">
+      <div class="banner-title" id="bannerTitle">Round Complete</div>
+      <div class="banner-desc" id="bannerDesc">Waiting for opponent...</div>
+      <button class="btn-next-round" id="btnNextRound" onclick="sendNextRound()">Next Round</button>
+    </div>
+
+    <!-- Boards Area -->
+    <div class="boards-wrapper">
+      <!-- Player's Own Board -->
+      <div class="board-section">
+        <div class="board-section-title">
+          <span>Your Board</span>
+        </div>
+        <div class="grid" id="myGrid">
+          <!-- 6 rows x 5 cells generated by JS -->
+        </div>
+      </div>
+
+      <!-- Opponent's Board (revealed only at the end of the round) -->
+      <div class="board-section opponent-board-wrapper" id="oppBoardWrapper">
+        <div class="board-section-title">
+          <span id="oppBoardTitle">Opponent's Board</span>
+        </div>
+        <div class="grid opponent-grid" id="oppGrid">
+          <!-- 6 rows x 5 cells for opponent -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div class="keyboard" id="keyboard">
+      <div class="keyboard-row">
+        <button class="key" data-key="Q">q</button>
+        <button class="key" data-key="W">w</button>
+        <button class="key" data-key="E">e</button>
+        <button class="key" data-key="R">r</button>
+        <button class="key" data-key="T">t</button>
+        <button class="key" data-key="Y">y</button>
+        <button class="key" data-key="U">u</button>
+        <button class="key" data-key="I">i</button>
+        <button class="key" data-key="O">o</button>
+        <button class="key" data-key="P">p</button>
+      </div>
+      <div class="keyboard-row">
+        <div style="flex: 0.5;"></div>
+        <button class="key" data-key="A">a</button>
+        <button class="key" data-key="S">s</button>
+        <button class="key" data-key="D">d</button>
+        <button class="key" data-key="F">f</button>
+        <button class="key" data-key="G">g</button>
+        <button class="key" data-key="H">h</button>
+        <button class="key" data-key="J">j</button>
+        <button class="key" data-key="K">k</button>
+        <button class="key" data-key="L">l</button>
+        <div style="flex: 0.5;"></div>
+      </div>
+      <div class="keyboard-row">
+        <button class="key wide" data-key="ENTER">Enter</button>
+        <button class="key" data-key="Z">z</button>
+        <button class="key" data-key="X">x</button>
+        <button class="key" data-key="C">c</button>
+        <button class="key" data-key="V">v</button>
+        <button class="key" data-key="B">b</button>
+        <button class="key" data-key="N">n</button>
+        <button class="key" data-key="M">m</button>
+        <button class="key wide" data-key="BACKSPACE">Del</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // State variables
+    let currentRound = 1;
+    let mySlot = "{{ slot }}";
+    let myGuesses = [];
+    let myFeedbacks = [];
+    let currentInput = "";
+    let isFinished = false;
+    let roundEnded = false;
+    let isSubmitting = false;
+    let pollInterval = null;
+
+    // Build grids
+    function initGrids() {
+      const myGrid = document.getElementById("myGrid");
+      const oppGrid = document.getElementById("oppGrid");
+      myGrid.innerHTML = "";
+      oppGrid.innerHTML = "";
+
+      for (let r = 0; r < 6; r++) {
+        const row = document.createElement("div");
+        row.className = "grid-row";
+        row.id = `my-row-${r}`;
+        for (let c = 0; c < 5; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.id = `my-cell-${r}-${c}`;
+          row.appendChild(cell);
+        }
+        myGrid.appendChild(row);
+
+        const oppRow = document.createElement("div");
+        oppRow.className = "grid-row";
+        oppRow.id = `opp-row-${r}`;
+        for (let c = 0; c < 5; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.id = `opp-cell-${r}-${c}`;
+          oppRow.appendChild(cell);
+        }
+        oppGrid.appendChild(oppRow);
+      }
+    }
+
+    function showToast(message, duration = 1800) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, duration);
+    }
+
+    function updateMyGridDisplay() {
+      // Completed rows
+      for (let r = 0; r < 6; r++) {
+        if (r < myGuesses.length) {
+          const word = myGuesses[r];
+          const feed = myFeedbacks[r] || [];
+          for (let c = 0; c < 5; c++) {
+            const cell = document.getElementById(`my-cell-${r}-${c}`);
+            cell.textContent = word[c];
+            cell.className = `cell ${feed[c] || ""}`;
+          }
+        } else if (r === myGuesses.length && !isFinished) {
+          // Active editing row
+          for (let c = 0; c < 5; c++) {
+            const cell = document.getElementById(`my-cell-${r}-${c}`);
+            cell.textContent = currentInput[c] || "";
+            cell.className = currentInput[c] ? "cell pop" : "cell";
+          }
+        } else {
+          // Blank row
+          for (let c = 0; c < 5; c++) {
+            const cell = document.getElementById(`my-cell-${r}-${c}`);
+            cell.textContent = "";
+            cell.className = "cell";
+          }
+        }
+      }
+    }
+
+    function updateKeyboard() {
+      // Key feedback precedence: correct > present > absent
+      const keyStatuses = {};
+      for (let r = 0; r < myGuesses.length; r++) {
+        const word = myGuesses[r];
+        const feed = myFeedbacks[r];
+        for (let c = 0; c < 5; c++) {
+          const letter = word[c];
+          const status = feed[c];
+          const existing = keyStatuses[letter];
+          if (status === "correct") {
+            keyStatuses[letter] = "correct";
+          } else if (status === "present" && existing !== "correct") {
+            keyStatuses[letter] = "present";
+          } else if (status === "absent" && !existing) {
+            keyStatuses[letter] = "absent";
+          }
+        }
+      }
+
+      document.querySelectorAll(".key").forEach(k => {
+        const keyVal = k.dataset.key;
+        if (keyVal && keyVal.length === 1) {
+          k.className = "key";
+          if (keyStatuses[keyVal]) {
+            k.classList.add(keyStatuses[keyVal]);
+          }
+        }
+      });
+    }
+
+    function handleKeyPress(key) {
+      if (isFinished || roundEnded || isSubmitting) return;
+
+      key = key.toUpperCase();
+      if (key === "ENTER") {
+        submitGuess();
+      } else if (key === "BACKSPACE" || key === "DELETE") {
+        if (currentInput.length > 0) {
+          currentInput = currentInput.slice(0, -1);
+          updateMyGridDisplay();
+        }
+      } else if (/^[A-Z]$/.test(key)) {
+        if (currentInput.length < 5) {
+          currentInput += key;
+          updateMyGridDisplay();
+        }
+      }
+    }
+
+    async function submitGuess() {
+      if (currentInput.length !== 5) {
+        showToast("Not enough letters");
+        const activeRow = document.getElementById(`my-row-${myGuesses.length}`);
+        if (activeRow) {
+          activeRow.classList.add("shake");
+          setTimeout(() => activeRow.classList.remove("shake"), 500);
+        }
+        return;
+      }
+
+      isSubmitting = true;
+      try {
+        const res = await fetch("/api/games/guess", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ guess: currentInput })
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          showToast(data.error);
+          const activeRow = document.getElementById(`my-row-${myGuesses.length}`);
+          if (activeRow) {
+            activeRow.classList.add("shake");
+            setTimeout(() => activeRow.classList.remove("shake"), 500);
+          }
+        } else if (data.success) {
+          myGuesses.push(data.guess);
+          myFeedbacks.push(data.feedback);
+          currentInput = "";
+          isFinished = data.finished;
+          updateMyGridDisplay();
+          updateKeyboard();
+
+          if (data.won) {
+            showToast("Splendid! Word solved! 🏆");
+          } else if (data.finished && !data.won) {
+            showToast("Round over. No more guesses!");
+          }
+          // Poll immediately to update status
+          fetchGameState();
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+      } finally {
+        isSubmitting = false;
+      }
+    }
+
+    async function sendNextRound() {
+      const btn = document.getElementById("btnNextRound");
+      btn.disabled = true;
+      btn.textContent = "Ready! Waiting...";
+      try {
+        await fetch("/api/games/next-round", { method: "POST" });
+        fetchGameState();
+      } catch (err) {
+        console.error("Next round error:", err);
+      }
+    }
+
+    async function resetMatch() {
+      if (confirm("Are you sure you want to reset all round scores?")) {
+        await fetch("/api/games/reset", { method: "POST" });
+        fetchGameState();
+      }
+    }
+
+    function renderOpponentBoard(oppData) {
+      const wrapper = document.getElementById("oppBoardWrapper");
+      if (!roundEnded || !oppData || !oppData.guesses) {
+        wrapper.classList.remove("show");
+        return;
+      }
+
+      wrapper.classList.add("show");
+      document.getElementById("oppBoardTitle").textContent = `${oppData.name}'s Board`;
+
+      const guesses = oppData.guesses || [];
+      const feedbacks = oppData.feedbacks || [];
+
+      for (let r = 0; r < 6; r++) {
+        if (r < guesses.length) {
+          const word = guesses[r];
+          const feed = feedbacks[r] || [];
+          for (let c = 0; c < 5; c++) {
+            const cell = document.getElementById(`opp-cell-${r}-${c}`);
+            cell.textContent = word[c];
+            cell.className = `cell ${feed[c] || ""}`;
+          }
+        } else {
+          for (let c = 0; c < 5; c++) {
+            const cell = document.getElementById(`opp-cell-${r}-${c}`);
+            cell.textContent = "";
+            cell.className = "cell";
+          }
+        }
+      }
+    }
+
+    async function fetchGameState() {
+      try {
+        const res = await fetch("/api/games/state");
+        if (res.status === 401) {
+          window.location.href = "{{ url_for('games_login') }}";
+          return;
+        }
+        const data = await res.json();
+        if (!data.registered) {
+          window.location.href = "{{ url_for('games_login') }}";
+          return;
+        }
+
+        // Check if new round began
+        if (data.round_num !== currentRound) {
+          currentRound = data.round_num;
+          myGuesses = [];
+          myFeedbacks = [];
+          currentInput = "";
+          isFinished = false;
+          roundEnded = false;
+          initGrids();
+          updateKeyboard();
+        }
+
+        mySlot = data.me.slot;
+        const myScoreVal = data.scores[mySlot] || 0;
+        const oppSlot = mySlot === "player1" ? "player2" : "player1";
+        const oppScoreVal = data.scores[oppSlot] || 0;
+
+        // Update Header & Scoreboard
+        document.getElementById("myDisplayName").textContent = `${data.me.name} (You)`;
+        document.getElementById("myScore").textContent = myScoreVal;
+        document.getElementById("oppDisplayName").textContent = data.opponent.name;
+        document.getElementById("oppScore").textContent = oppScoreVal;
+        document.getElementById("roundIndicator").textContent = `Round ${data.round_num}`;
+
+        const oppDot = document.getElementById("oppStatusDot");
+        if (data.opponent.online) {
+          oppDot.className = "player-status-dot online";
+        } else {
+          oppDot.className = "player-status-dot";
+        }
+
+        // Sync local guesses/finished if not yet updated
+        if (data.me.guesses && data.me.guesses.length > myGuesses.length) {
+          myGuesses = data.me.guesses;
+          myFeedbacks = data.me.feedbacks;
+          isFinished = data.me.finished;
+          updateMyGridDisplay();
+          updateKeyboard();
+        }
+
+        roundEnded = data.round_ended;
+
+        // Status banner handling
+        const banner = document.getElementById("statusBanner");
+        const bannerTitle = document.getElementById("bannerTitle");
+        const bannerDesc = document.getElementById("bannerDesc");
+        const btnNext = document.getElementById("btnNextRound");
+
+        if (roundEnded) {
+          banner.classList.add("show");
+          const wordText = data.target_word ? ` Word: ${data.target_word}` : "";
+          if (data.round_winner_slot === mySlot) {
+            bannerTitle.textContent = `🎉 You Won Round ${data.round_num}! (${wordText})`;
+            bannerTitle.style.color = "#22c55e";
+          } else if (data.round_winner_slot === oppSlot) {
+            bannerTitle.textContent = `💀 ${data.opponent.name} Won Round ${data.round_num}! (${wordText})`;
+            bannerTitle.style.color = "#f85149";
+          } else {
+            bannerTitle.textContent = `🤝 Round ${data.round_num} Tied! (${wordText})`;
+            bannerTitle.style.color = "#eab308";
+          }
+
+          bannerDesc.textContent = data.round_reason;
+
+          if (data.me.ready_next) {
+            btnNext.disabled = true;
+            btnNext.textContent = data.opponent.ready_next ? "Starting..." : "Waiting for opponent...";
+          } else {
+            btnNext.disabled = false;
+            btnNext.textContent = data.opponent.ready_next ? `${data.opponent.name} is ready! Start Next Round` : "Next Round";
+          }
+
+          renderOpponentBoard(data.opponent);
+        } else if (isFinished) {
+          banner.classList.add("show");
+          bannerTitle.textContent = "You finished your guesses!";
+          bannerTitle.style.color = "#e6edf3";
+          bannerDesc.textContent = `Waiting for ${data.opponent.name} to finish their board...`;
+          btnNext.style.display = "none";
+          renderOpponentBoard(null);
+        } else {
+          banner.classList.remove("show");
+          btnNext.style.display = "inline-block";
+          renderOpponentBoard(null);
+        }
+
+      } catch (err) {
+        console.error("Poll error:", err);
+      }
+    }
+
+    // Event listeners for physical & virtual keyboards
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      handleKeyPress(e.key);
+    });
+
+    document.querySelectorAll(".key").forEach(k => {
+      k.addEventListener("click", () => {
+        const keyVal = k.dataset.key;
+        if (keyVal) {
+          handleKeyPress(keyVal);
+        }
+      });
+    });
+
+    // Initialize
+    initGrids();
+    fetchGameState();
+    pollInterval = setInterval(fetchGameState, 1500);
+  </script>
+</body>
+</html>
