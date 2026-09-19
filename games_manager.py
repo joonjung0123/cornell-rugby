@@ -126,6 +126,24 @@ class HeadToHeadWordleSession:
         with _LOCK:
             if session_id in self.players:
                 del self.players[session_id]
+            # When no players remain connected, wipe session and reset everything cleanly
+            if len(self.players) == 0:
+                self._reset_match_internal()
+
+    def _reset_match_internal(self):
+        """Reset all game scores, progress, and rounds (must be called with _LOCK held)."""
+        self.scores = {"player1": 0, "player2": 0}
+        self.round_num = 1
+        self.target_word = self._pick_word()
+        self.round_start_time = time.time()
+        self.round_ended = False
+        self.round_winner_slot = None
+        self.round_reason = ""
+        self.next_round_ready = {"player1": False, "player2": False}
+        self.round_player_state = {
+            "player1": self._init_player_round_state(),
+            "player2": self._init_player_round_state()
+        }
 
     def get_player_by_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         with _LOCK:
@@ -275,18 +293,7 @@ class HeadToHeadWordleSession:
 
     def reset_match(self):
         with _LOCK:
-            self.scores = {"player1": 0, "player2": 0}
-            self.round_num = 1
-            self.target_word = self._pick_word()
-            self.round_start_time = time.time()
-            self.round_ended = False
-            self.round_winner_slot = None
-            self.round_reason = ""
-            self.next_round_ready = {"player1": False, "player2": False}
-            self.round_player_state = {
-                "player1": self._init_player_round_state(),
-                "player2": self._init_player_round_state()
-            }
+            self._reset_match_internal()
 
     def get_state_for_player(self, session_id: str) -> Dict[str, Any]:
         with _LOCK:
