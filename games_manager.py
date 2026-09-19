@@ -166,11 +166,20 @@ class PersistentWordleSession:
     def unregister_player(self, session_id: str):
         def _op(state):
             players = state.get("players", {})
-            if session_id in players:
-                del players[session_id]
+            player = players.pop(session_id, None)
+            if player:
+                slot = player.get("slot")
+                if slot and slot in state.get("round_player_state", {}):
+                    # Wipe exiting player's round board state & next round readiness
+                    state["round_player_state"][slot] = _initial_round_player_state()
+                if slot and slot in state.get("next_round_ready", {}):
+                    state["next_round_ready"][slot] = False
+                if slot and slot in state.get("scores", {}):
+                    state["scores"][slot] = 0
+
             state["players"] = players
             if len(players) == 0:
-                # Reset all game state when everyone leaves
+                # Reset all game state when no players remain
                 fresh = _initial_state()
                 state.clear()
                 state.update(fresh)
